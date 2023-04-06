@@ -41,6 +41,13 @@ def site_analysis (grid_size, full_site, land_extents_for_analysis, building_for
     # Site = "T3-Lake"
     print("Terrain selected: " + str(Site))
 
+d =
+site =
+land =
+building =
+level =
+slp_result = site_analysis(d, site, land, building, level)
+
 ####
 if land != None:
     print("found the mesh")

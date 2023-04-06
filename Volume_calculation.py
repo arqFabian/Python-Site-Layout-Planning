@@ -14,8 +14,8 @@ print("Intersection data loaded")
 print(z_level)
 
 D = 1
-dx_rows = 8
-dy_cols = 4
+dx_rows = 26
+dy_cols = 74
 
 ###
 # This funciton extract the z coordinate from the vtx intersections.
@@ -28,6 +28,7 @@ def z_coordinate_extraction(input_list_vertex):
         j = input_list_vertex[i]
         k = j[2]
         coord.append(k)
+
     return coord
 
 

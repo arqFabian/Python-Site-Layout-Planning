@@ -6,14 +6,15 @@ verts = list(range(500))  # Dummy list to test the tracking of avalibale positio
 # verts = list(string.ascii_lowercase)
 # print (verts)
 
-dx_rows = 8
-dy_cols = 4
-bx_rows = 2
-by_cols = 2
+dx_rows = 26
+dy_cols = 74
+bx_rows = 4
+by_cols = 4
 D = 1  # module size
 
 
 def available_positions_function(list_of_vertex, distance_x, distance_y, building_x, building_y):
+    verts = list_of_vertex
     dx = distance_x
     dy = distance_y
     bx = building_x
@@ -41,7 +42,7 @@ Specifically "Volumes" and "Trees"
 volumes = np.load('/Users/arqfa/OneDrive/Desktop/Research/site_volumes.npy')
 # volumes =list(range(-10,200)) #substitute this volume list for the actual calculations
 # volumes = [-1]*8+[2]*8+[-3]*8+[-4]*8
-Trees = [0, 1, 0.5, 0, 0.25] * 8
+Trees = [0, 1, 0.5, 0, 0.25] * 100
 print(("there are ") + str(len(volumes)) + (" independent volumes on the grid of the site"))
 # print (volumes)
 
