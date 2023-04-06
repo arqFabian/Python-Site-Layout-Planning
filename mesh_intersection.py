@@ -19,7 +19,7 @@ mesh = trimesh.load('/Users/arqfa/OneDrive/Desktop/Research/terrain.glb', force=
 
 # create some rays and find the intersection "rays - site"
 #load data from blender grid origin
-data = np.load('/Users/arqfa/OneDrive/Desktop/Research/origin.npy')
+data = np.load('/Users/arqfa/OneDrive/Desktop/Research/top_grid_vtx.npy')
 ray_origins = np.array(data)
 #print(ray_origins)
 # ray_directions pointing down
@@ -36,12 +36,12 @@ locations = np.array(locations)
 
 index_ray = np.array(index_ray)
 inds = index_ray.argsort()
-sortedIntersections = locations[inds]
+vtx_intersection = locations[inds]
 #print("this is the sorted list: " + str(sortedIntersections))
-print("Number of intersections: " + str(len(sortedIntersections)))
+print("Number of intersections: " + str(len(vtx_intersection)))
 # add a condition that verifies if the number of intersections is similar to the number of rays if not report an error
 
 
-#saving the intersections as "intersection.npy" file
-np.save('/Users/arqfa/OneDrive/Desktop/Research/intersection', sortedIntersections)
+#saving the intersections as "vtx_intersection.npy" file
+np.save('/Users/arqfa/OneDrive/Desktop/Research/vtx_intersection', vtx_intersection)
 
