@@ -1,5 +1,21 @@
+# This script uses trimesh as the main tool for processing the intersections.
+# The lists are imported from blender and in here are reformatted as numpy arrays.
+# The meshes are in GLB format as per recommended by trimesh on their website.
+
+"""
+Fragment of code that identifies the intersection point between the site
+and rays with origin on a grid stationed above the bounds of the site.
+The scripts works outside the frame of blender.
+"""
+
+import trimesh
+import numpy as np
+
+
+# mesh
 #import mesh representing the site from blender
 mesh = trimesh.load('/Users/arqfa/OneDrive/Desktop/Research/terrain.glb', force='mesh')
+##mesh = trimesh.load('/Users/arqfa/downloads/cube.glb', force='mesh')
 
 # create some rays and find the intersection "rays - site"
 #load data from blender grid origin
@@ -28,3 +44,4 @@ print("Number of intersections: " + str(len(sortedIntersections)))
 
 #saving the intersections as "intersection.npy" file
 np.save('/Users/arqfa/OneDrive/Desktop/Research/intersection', sortedIntersections)
+
