@@ -20,26 +20,62 @@ cls()  # this function call will clear the console
 
 # start of process def export():
 def site_analysis (grid_size, full_site, land_extents_for_analysis, building_for_analysis, level_for_implantation):
+    #determine the variables from the inputs
+    global dx_rows
     d = grid_size
-    site = full_site #the full site chosen for analysis and intersection
-    land = land_extents_for_analysis
-    # land is the rectangular plane representing the area on the site that allows
-    # for the building construction, it projects the extents of the grid its dimensions must be integers.
-    building = building_for_analysis #chosen building to be tested for site layout planning
-    level = level_for_implantation # a rectangular plane whose z coordinate determines the level
-    # of the platform where the building will be constructed.
+    site = bpy.data.objects.get(full_site)  #the full site chosen for analysis and intersection
+    land = bpy.data.objects.get(land_extents_for_analysis) # land is the rectangular plane representing the area on the site that allows for the building construction, it projects the extents of the grid its dimensions must be integers.
+    building = bpy.data.objects.get(building_for_analysis) #chosen building to be tested for site layout planning
+    level = bpy.data.objects.get(level_for_implantation) # a rectangular plane whose z coordinate determines the level of the platform where the building will be constructed.
+    height_of_grid = 10
+    print("Terrain selected: " + str(full_site))
+    print("Land selected: " + str(land_extents_for_analysis))
+    print("building selected: " + str(building_for_analysis))
+    print("level selected: " + str(level_for_implantation))
+    print("Grid size: " + str(grid_size) + " m")
 
-    print("Site Analysis in process")
-    scene = bpy.data.scenes['Scene']
-    # T1- terrain of West2- option
-    land = bpy.data.objects.get("AreaSelection8x4")  # chosen area of the site
-    level = bpy.data.objects.get("level_location")  # cut plane where the new level location would be.
-    Site = "T1-West2"
-    # Site = "2.Landscape.001-Orig.001"
-    # T3- Lake - Option
-    # land = bpy.data.objects.get("Plane.002")
-    # Site = "T3-Lake"
-    print("Terrain selected: " + str(Site))
+    # measuring the land and creating top grid and saving the vertex on the top grid
+    if land != None:
+        print("found the mesh")
+        print("land mesh is located at ", land.location.x, ", ", land.location.y, ", ", land.location.z)
+        print("with bounding box ", land.dimensions.x, ", ", land.dimensions.y, ", ", land.dimensions.z)
+
+        # Setting variables
+
+        dx_rows = int(land.dimensions.x)
+        dy_cols = int(land.dimensions.y)
+        h = height_of_grid
+
+        vtx = []
+        for i in range(dx_rows + 1):
+            for j in range(dy_cols + 1):
+                vtx.append([i * land.dimensions.x / dx_rows + land.location.x - land.dimensions.x / 2.0,
+                            j * land.dimensions.y / dy_cols + land.location.y - land.dimensions.y / 2.0,
+                            land.dimensions.z + h])
+
+        faces = []
+        for i in range(dx_rows):
+            for j in range(dy_cols):
+                faces.append([i * (dy_cols + 1) + j, (i + 1) * (dy_cols + 1) + j, (i + 1) * (dy_cols + 1) + j + 1])
+                faces.append([i * (dy_cols + 1) + j, (i + 1) * (dy_cols + 1) + j + 1, i * (dy_cols + 1) + j + 1])
+
+        mesh = bpy.data.meshes.new("top_grid")
+        mesh.from_pydata(vtx, [], faces)
+        obj = bpy.data.objects.new("Plane_Top", mesh)
+        bpy.context.scene.collection.objects.link(obj)
+        print("Top Grid created as: Plane_Top")
+
+        # saving the list of vertex of the "Top Grid" to be used on the mesh_intersection file with trimesh.
+        vtx_position = [x for l in vtx for x in l]
+        vtx_id = len(vtx)
+        top_grid_vtx = np.array_split(vtx_position, vtx_id)
+        np.save('/Users/arqfa/OneDrive/Desktop/Research/top_grid_vtx', top_grid_vtx)
+        print("ray origins for intersection exported as 'origin.npy'")
+    else:
+        print("mesh not found")
+
+
+    return dx_rows
 
 d =
 site =
