@@ -152,9 +152,9 @@ def site_analysis (grid_size, full_site, land_extents_for_analysis, building_for
             faces.append([i * (dy_cols + 1) + j, (i + 1) * (dy_cols + 1) + j + 1, i * (dy_cols + 1) + j + 1])
     mesh = bpy.data.meshes.new("Top_intersection")
     mesh.from_pydata(vtx_intersection, [], faces)
-    obj = bpy.data.objects.new("Plane_int", mesh)
+    obj = bpy.data.objects.new("mesh_intersection", mesh)
     bpy.context.scene.collection.objects.link(obj)
-    print("!!!!Visualization of intersection mesh completed for terrain: " + str(full_site))
+    print("!!!!Visualization of intersection mesh completed as 'mesh intersection' for the site: " + str(full_site))
 
 
 
