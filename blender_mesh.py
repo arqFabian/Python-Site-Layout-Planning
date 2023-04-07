@@ -12,20 +12,18 @@ import numpy as np
 import subprocess
 from os import system
 
-# cleaning segment
-cls = lambda: system('cls')
-
-cls()  # this function call will clear the console
 
 # start of process def export():
-def site_analysis (grid_size, full_site, land_extents_for_analysis, building_for_analysis, level_for_implantation):
-    #determine the variables from the inputs
+def site_analysis(grid_size, full_site, land_extents_for_analysis, building_for_analysis, level_for_implantation):
+    # determine the variables from the inputs
 
     d = grid_size
-    site = bpy.data.objects.get(full_site)  #the full site chosen for analysis and intersection
-    land = bpy.data.objects.get(land_extents_for_analysis) # land is the rectangular plane representing the area on the site that allows for the building construction, it projects the extents of the grid its dimensions must be integers.
-    building = bpy.data.objects.get(building_for_analysis) #chosen building to be tested for site layout planning
-    level = bpy.data.objects.get(level_for_implantation) # a rectangular plane whose z coordinate determines the level of the platform where the building will be constructed.
+    site = bpy.data.objects.get(full_site)  # the full site chosen for analysis and intersection
+    land = bpy.data.objects.get(
+        land_extents_for_analysis)  # land is the rectangular plane representing the area on the site that allows for the building construction, it projects the extents of the grid its dimensions must be integers.
+    building = bpy.data.objects.get(building_for_analysis)  # chosen building to be tested for site layout planning
+    level = bpy.data.objects.get(
+        level_for_implantation)  # a rectangular plane whose z coordinate determines the level of the platform where the building will be constructed.
     height_of_grid = 10
     print("Terrain selected: " + str(full_site))
     print("Land selected: " + str(land_extents_for_analysis))
@@ -81,12 +79,32 @@ def site_analysis (grid_size, full_site, land_extents_for_analysis, building_for
     else:
         print("mesh not found")
 
+    # This section establishes the new level location base on the height (z value) position of a plane
+    if level != None:
+        z_level = float(level.location.z)
+        print(z_level)
+        np.save('/Users/arqfa/OneDrive/Desktop/Research/z_level',
+                z_level)  # This file can be deleted once the data has been joined
+    else:
+        print("level location '" + str(level_for_implantation) + "' not found")
+
+    # This section analizes dimensions of the new building
+    if building is not None:
+        bx_rows = int(building.dimensions.x)
+        by_cols = int(building.dimensions.y)
+        bz_height = int(building.dimensions.z)
+        print("The building has the following dimensions (x,y,z):  ", building.dimensions.x, ", ",
+              building.dimensions.y,
+              ", ", building.dimensions.z)
+    else:
+        print("The building " + str(building_name) + "not found")
+
     # Exporting the terrain for intersection
 
-    if site != None:
+    if site is not None:
         # the name of the "site" that is being exported was defined at the beginning of the script
+        bpy.context.view_layer.objects.active = site
         site.select_set(True)
-
         # Duplicate mesh
         bpy.ops.object.duplicate_move(OBJECT_OT_duplicate={"linked": False, "mode": 'TRANSLATION'},
                                       TRANSFORM_OT_translate={"value": (0, 0, 0), "orient_axis_ortho": 'X',
@@ -95,7 +113,8 @@ def site_analysis (grid_size, full_site, land_extents_for_analysis, building_for
                                                               "orient_matrix_type": 'GLOBAL',
                                                               "constraint_axis": (False, False, False), "mirror": False,
                                                               "use_proportional_edit": False,
-                                                              "proportional_edit_falloff": 'SMOOTH', "proportional_size": 1,
+                                                              "proportional_edit_falloff": 'SMOOTH',
+                                                              "proportional_size": 1,
                                                               "use_proportional_connected": False,
                                                               "use_proportional_projected": False, "snap": False,
                                                               "snap_elements": {'INCREMENT'}, "use_snap_project": False,
@@ -113,7 +132,8 @@ def site_analysis (grid_size, full_site, land_extents_for_analysis, building_for
         bpy.ops.transform.rotate(value=1.5708, orient_axis='X', orient_type='GLOBAL',
                                  orient_matrix=((1, 0, 0), (0, 1, 0), (0, 0, 1)), orient_matrix_type='GLOBAL',
                                  constraint_axis=(True, False, False), mirror=False, use_proportional_edit=False,
-                                 proportional_edit_falloff='SMOOTH', proportional_size=1, use_proportional_connected=False,
+                                 proportional_edit_falloff='SMOOTH', proportional_size=1,
+                                 use_proportional_connected=False,
                                  use_proportional_projected=False, snap=False, snap_elements={'INCREMENT'},
                                  use_snap_project=False, snap_target='CLOSEST', use_snap_self=True, use_snap_edit=True,
                                  use_snap_nonedit=True, use_snap_selectable=False)
@@ -137,14 +157,18 @@ def site_analysis (grid_size, full_site, land_extents_for_analysis, building_for
                '/Users/arqfa/PycharmProjects/site_layout/mesh_intersection.py']
     print(f'Running \"{" ".join(command)}\"')
     subprocess.call(command, shell=True)
-
     # load trimesh intersection lists.
     # the vertexes of the intersection are on the list "vtx_intersection.npy" that comes straight from the uploaded file
-    vtx_intersection = np.load('/Users/arqfa/OneDrive/Desktop/Research/vtx_intersection.npy')
-    print("Intersection data loaded back into blender")
+    try:
+        vtx_intersection = np.load('/Users/arqfa/OneDrive/Desktop/Research/vtx_intersection.npy')
+        print("Intersection data loaded back into blender")
+    except:
+        print("Error loading vtx_intersection.npy")
 
-    # Visualize intersection mesh
+        # exit function if there was an error loading the file
+        return
 
+    # continue with the rest of the code to visualize the intersection mesh
     faces = []
     for i in range(dx_rows):
         for j in range(dy_cols):
@@ -156,14 +180,8 @@ def site_analysis (grid_size, full_site, land_extents_for_analysis, building_for
     bpy.context.scene.collection.objects.link(obj)
     print("!!!!Visualization of intersection mesh completed as 'mesh intersection' for the site: " + str(full_site))
 
+    return d, dx_rows, dy_cols, bx_rows, by_cols, bz_height
+    #return {'dx': dx_rows, 'dy': dy_cols, 'bx': bx_rows}#d, dx_rows, dy_cols, bx_rows, by_cols, bz_height
 
 
-    return dx_rows, dy_cols,
 
-building_name = "building4x4"
-d = 1
-site = "T1-West2"
-land = "AreaSelection8x4"
-building = "building4x4"
-level = "level_location"
-slp_result = site_analysis(d, site, land, building, level)

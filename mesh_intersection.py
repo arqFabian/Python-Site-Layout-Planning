@@ -27,6 +27,7 @@ ray_directions = np.array([[0, 0, -1]] * int(len(ray_origins)))
 
 # run trimesh to find the intersection between the rays and site
 locations, index_ray, index_tri = mesh.ray.intersects_location(
+
     ray_origins=ray_origins,
     ray_directions=ray_directions)
 

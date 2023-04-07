@@ -1,6 +1,6 @@
 import numpy as np
 
-# load original grid vertex
+"""# load original grid vertex
 vtx_origin = np.load('/Users/arqfa/OneDrive/Desktop/Research/origin.npy')
 print("origin vertex loaded")
 print(vtx_origin[0:6])
@@ -11,11 +11,22 @@ print(vtx_intersection[0:6])
 # load level z location for volume calculations
 z_level = np.load('/Users/arqfa/OneDrive/Desktop/Research/z_level.npy')
 print("Intersection data loaded")
+print(z_level)"""
+
+#D = 1
+#dx_rows = 20
+#dy_cols = 20
+
+vtx_origin = np.load('/Users/arqfa/OneDrive/Desktop/Research/top_grid_vtx.npy')
+print("origin vertex loaded")
+# load intersection vertex
+vtx_intersection = np.load('/Users/arqfa/OneDrive/Desktop/Research/vtx_intersection.npy')
+print("Intersection data loaded")
+# load level z location for volume calculations
+z_level = np.load('/Users/arqfa/OneDrive/Desktop/Research/z_level.npy')
+print("Intersection data loaded")
 print(z_level)
 
-D = 1
-dx_rows = 26
-dy_cols = 74
 
 ###
 # This funciton extract the z coordinate from the vtx intersections.
@@ -80,12 +91,6 @@ def volume_formula(distance_x, distance_y, d_dist_btw_axes, z_intersection_list,
             volumes.append(v)
     print("volumes by axis X: " + str(len(volumes)) + str(volumes))
     return volumes
-    """volumes = []
-    for i in range(int(len(areas)) - 1):
-        v = (areas[i] + areas[i + 1]) * (d / 2)
-        volumes.append(v)
-    # print("volumes by axis X: " + str(len(volumes)) + str(volumes))
-    return volumes"""
 
 
 site_volumes = volume_formula(dx_rows, dy_cols, D, z_coord_intersection, z_level)
