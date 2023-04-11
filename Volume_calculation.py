@@ -71,8 +71,7 @@ def volume_formula(distance_x, distance_y, d_dist_btw_axes, z_intersection_list,
             b = level_difference[int(j + x / h + 1)]
             grid_area = (a + b) / 2
             areas.append(grid_area)
-    #print("areas by axis X " + str(len(areas)) + str(areas))
-
+    # print("areas by axis X " + str(len(areas)) + str(areas))
 
     # !!!!!!code for volume!!!!
     # Prismoid formula : V = (A1+A2)*d/2 ;
@@ -84,15 +83,15 @@ def volume_formula(distance_x, distance_y, d_dist_btw_axes, z_intersection_list,
         for j in range(int(i_min), int(i_max)):
             v = ((areas[j] + areas[(j + 1)]) / 2) * h
             volumes.append(v)
-    #print("volumes by axis X: " + str(len(volumes)) + str(volumes))
+    # print("volumes by axis X: " + str(len(volumes)) + str(volumes))
     return volumes
 
 
 site_volumes = volume_formula(dx_rows, dy_cols, D, z_coord_intersection, z_level)
 
-print("##############")
-print("the volumes per segment of grid are: " + str(site_volumes))
+#print("!!!!!!!!")
+#print("ERROR the volumes per segment of grid are: " + str(site_volumes))
 
 np.save('/Users/arqfa/OneDrive/Desktop/Research/site_volumes',
         site_volumes)  # This file can be deleted once the data has been joined
-print("Volumes exported successfully")
+#print("Volumes exported successfully")

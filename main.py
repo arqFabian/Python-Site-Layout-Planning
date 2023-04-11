@@ -33,24 +33,23 @@ sys.path.append(slp_app_path)
 
 # importing the blender_mesh module for measuring and intersection
 
+
 from blender_mesh import site_analysis
 
 building_name = "building4x4"
 d = 1
-site = "T1-West2"#"Landscape_002"
+site = "T1-West2"  # "Landscape_002"
 land = "AreaSelection8x4"
 building = "building4x4"
 level = "level_location"
 
-
-
 d, dx_rows, dy_cols, bx_rows, by_cols, bz_height = site_analysis(d, site, land, building, level)
-#print(d, dx_rows, dy_cols, bx_rows, by_cols, bz_height)
+# print(d, dx_rows, dy_cols, bx_rows, by_cols, bz_height)
 print("the site and building variables have been calculated")
 
 # Volume calculation module
 
-from Volume_calculation import *
+from Volume_calculation import z_coordinate_extraction, volume_formula
 
 vtx_origin = np.load('/Users/arqfa/OneDrive/Desktop/Research/top_grid_vtx.npy')
 print("origin vertex loaded")
@@ -67,19 +66,19 @@ z_coord_land = z_coordinate_extraction(vtx_origin)
 # print(str(len(z_coord_intersection)) + str(z_coord_intersection[0:5]))
 # print(str(len(z_coord_land)) + str(z_coord_land[0:5]))
 
-site_volumes = volume_formula(dx_rows, dy_cols, D, z_coord_intersection, z_level)
+site_volumes = volume_formula(dx_rows, dy_cols, d, z_coord_intersection, z_level)
 
 print("##############")
-# print("the volumes per segment of grid are: " + str(site_volumes))
-print("the volumes per segment of grid have been calculated. There are " + str(len(site_volumes)))
+print("The volumes per segment of grid have been calculated. There are " + str(len(site_volumes)))
 
 # fitness function module
 
-from fitness_functions import*
+from fitness_functions import available_positions_function, f1_earthwork_vol_function, f2_earthwork_costs_function, f3_deforestation_function, activation_function
 
 # available positions
 available_positions = available_positions_function(vtx_origin, dx_rows, dy_cols, bx_rows, by_cols)
-print("there are " + str(len(available_positions)) + " available positions on the grid from the original " + str(len(vtx_origin)) )
+print("there are " + str(len(available_positions)) + " available positions on the grid from the original " + str(
+    len(vtx_origin)))
 
 # f1 - Earthwork volumes calculations function
 f1_earthwork_vol = f1_earthwork_vol_function(available_positions, site_volumes)
@@ -99,4 +98,4 @@ activated_f3 = activation_function(f3_deforestation_value, k_factor, t0_point_va
 
 print("activated fitness functions calculated successfully for " + str(len(activated_f1)) + " values")
 
-# hello
+# hello 2

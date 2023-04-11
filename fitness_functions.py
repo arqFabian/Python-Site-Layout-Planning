@@ -197,10 +197,9 @@ print(f2_normalized)
 print("For the normalized f3-deforestation values: ")
 print(f3_normalized)
 
-
 # Activation Function + final normalization
 
-def activation_function(input_list, k_penalization_factor, t0_inflection_point):
+"""def activation_function(input_list, k_penalization_factor, t0_inflection_point):
     # Normalization of function, optimizing for zero
     normalized_list = normalization_of_functions(input_list)
 
@@ -222,6 +221,25 @@ def activation_function(input_list, k_penalization_factor, t0_inflection_point):
         normalization = (value - min_list) / (max_list - min_list)
         rounded_normalization = round(normalization, 3)
         normalized_activated_list.append(rounded_normalization)
+    print("max activated " + str(max(normalized_activated_list)))
+    return normalized_activated_list"""
+
+
+def activation_function(input_list, k_penalization_factor, t0_inflection_point):
+    # Normalization of function, optimizing for zero
+    normalized_list = normalization_of_functions(input_list)
+
+    # Application of activation function on normalized list
+    k_value = k_penalization_factor  # numerical value representing penalization
+    t0_point = t0_inflection_point  # number representing the inflection or tolerance of the sigmoid curve
+
+    activated_list = [1 / (1 + math.exp(-k_value * (value - t0_point))) for value in normalized_list]
+
+    # Once again normalization of activated list because of numerical shift due to k and t0 values.
+    min_list = min(activated_list)
+    max_list = 1  # This value is the ideal scenario
+    normalized_activated_list = [(value - min_list) / (max_list - min_list) for value in activated_list]
+    normalized_activated_list = [round(value, 3) for value in normalized_activated_list]
     print("max activated " + str(max(normalized_activated_list)))
     return normalized_activated_list
 
@@ -248,16 +266,11 @@ print(max(activated_f2))
 print(max(activated_f3))
 
 
-
-
-""""""
-
-
 # Selection of top three recommendations
 
-# This section combines the results of the three functions as sublists of a master List that can later be tabulated
+# This section combines the results of the three functions as sublist of a master List that can later be tabulated
 
-
+# This function concatenates several lists based on the order that they are put as input
 def create_nested_list(*lists):
     nested_list = []
     for i in range(len(lists[0])):
