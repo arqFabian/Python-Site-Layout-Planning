@@ -23,21 +23,21 @@ def print_hi(name):
 if __name__ == '__main__':
     print_hi('Site Layout Planning Optimization')
 
-#defining the paths for the project
+# defining the paths for the project
 
-#path of the blender file we are using.
-blend_file_path = bpy.path.abspath("//") #This will update when using on different blender files.
-#path to the site_layout app directory.
+# path of the blender file we are using.
+blend_file_path = bpy.path.abspath("//")  # This will update when using on different blender files.
+# path to the site_layout app directory.
 slp_app_path = 'C:/Users/arqfa/PycharmProjects/site_layout'
 sys.path.append(slp_app_path)
 
-#importing the blender_mesh module for measuring and intersection
+# importing the blender_mesh module for measuring and intersection
 
 from blender_mesh import site_analysis
 
 building_name = "building4x4"
 d = 1
-site = "T1-West2"
+site = "T1-West2"#"Landscape_002"
 land = "AreaSelection8x4"
 building = "building4x4"
 level = "level_location"
@@ -45,7 +45,9 @@ level = "level_location"
 d, dx_rows, dy_cols, bx_rows, by_cols, bz_height = site_analysis(d, site, land, building, level)
 print(d, dx_rows, dy_cols, bx_rows, by_cols, bz_height)
 
-from Volume_calculation import*
+# Volume calculation module
+
+from Volume_calculation import *
 
 vtx_origin = np.load('/Users/arqfa/OneDrive/Desktop/Research/top_grid_vtx.npy')
 print("origin vertex loaded")
@@ -59,11 +61,20 @@ print(z_level)
 z_coord_intersection = z_coordinate_extraction(vtx_intersection)
 z_coord_land = z_coordinate_extraction(vtx_origin)
 
-#print(str(len(z_coord_intersection)) + str(z_coord_intersection[0:5]))
-#print(str(len(z_coord_land)) + str(z_coord_land[0:5]))
+# print(str(len(z_coord_intersection)) + str(z_coord_intersection[0:5]))
+# print(str(len(z_coord_land)) + str(z_coord_land[0:5]))
 
 site_volumes = volume_formula(dx_rows, dy_cols, D, z_coord_intersection, z_level)
 
 print("##############")
-#print("the volumes per segment of grid are: " + str(site_volumes))
+# print("the volumes per segment of grid are: " + str(site_volumes))
 print("the volumes per segment of grid have been calculated. There are " + str(len(site_volumes)))
+
+# fitness function module
+
+from fitness_functions import*
+
+#available positions
+available_positions = available_positions_function(vtx_origin, dx_rows, dy_cols, bx_rows, by_cols)
+print("there are " + str(len(available_positions)) + " available positions on the grid from the original " + str(len(vtx_origin)) )
+

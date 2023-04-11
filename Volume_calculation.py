@@ -13,9 +13,9 @@ z_level = np.load('/Users/arqfa/OneDrive/Desktop/Research/z_level.npy')
 print("Intersection data loaded")
 print(z_level)"""
 
-#D = 1
-#dx_rows = 20
-#dy_cols = 20
+D = 1
+dx_rows = 20
+dy_cols = 20
 
 vtx_origin = np.load('/Users/arqfa/OneDrive/Desktop/Research/top_grid_vtx.npy')
 print("origin vertex loaded")

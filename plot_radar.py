@@ -2,15 +2,18 @@
 import plotly.graph_objects as go
 import numpy as np
 
-def radar_plot (normalized_list, position_label):
+def radar_plot (normalized_list, position_label, n_solutions):
+    list = normalized_list
+    list_id = position_label
+    n = n_solutions
     categories = ['f1 Earthwork values', 'f2 earthwork costs', 'f3 deforestation values']
     fig = go.Figure()
-    for i in range(len(normalized_list)):
+    for i in range(n):
         fig.add_trace(go.Scatterpolar(
-            r=normalized_list[i],
+            r=list[i],
             theta=categories,
             fill='toself',
-            name='Position' + str(position_label[i])
+            name='Position' + str(list_id[i])
         ))
     fig.update_layout(
         polar=dict(
@@ -58,7 +61,15 @@ normalized_values = np.load('/Users/arqfa/OneDrive/Desktop/Research/normalized_v
 print("normalized values successfully loaded")
 available_positions = np.load('/Users/arqfa/OneDrive/Desktop/Research/available_positions.npy')
 print("available positions successfully loaded")
-i = 2
-print (normalized_values[i])
+scores_positions = np.load('/Users/arqfa/OneDrive/Desktop/Research/scores_positions.npy')
+print("available positions successfully loaded")
 
-slp_plot = radar_plot(normalized_values, available_positions)
+number_solutions = 5
+
+my_list = scores_positions
+
+sorted_list = sorted(my_list, key=lambda x: x[1])
+
+print(sorted_list)
+
+slp_plot = radar_plot(normalized_values, available_positions, number_solutions)
