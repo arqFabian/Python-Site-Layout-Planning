@@ -90,7 +90,7 @@ def volume_formula(distance_x, distance_y, d_dist_btw_axes, z_intersection_list,
 site_volumes = volume_formula(dx_rows, dy_cols, D, z_coord_intersection, z_level)
 
 #print("!!!!!!!!")
-#print("ERROR the volumes per segment of grid are: " + str(site_volumes))
+#print("the volumes per segment of grid are: " + str(site_volumes))
 
 np.save('/Users/arqfa/OneDrive/Desktop/Research/site_volumes',
         site_volumes)  # This file can be deleted once the data has been joined

@@ -14,9 +14,10 @@ from os import system
 
 
 # start of process def export():
-def site_analysis(grid_size, full_site, land_extents_for_analysis, building_for_analysis, level_for_implantation):
+def site_analysis(grid_size, full_site, land_extents_for_analysis, building_for_analysis, level_for_implantation,
+                  blender_path):
     # determine the variables from the inputs
-
+    path = blender_path
     d = grid_size
     site = bpy.data.objects.get(full_site)  # the full site chosen for analysis and intersection
     land = bpy.data.objects.get(
@@ -66,7 +67,8 @@ def site_analysis(grid_size, full_site, land_extents_for_analysis, building_for_
         vtx_position = [x for l in vtx for x in l]
         vtx_id = len(vtx)
         top_grid_vtx = np.array_split(vtx_position, vtx_id)
-        np.save('/Users/arqfa/OneDrive/Desktop/Research/top_grid_vtx', top_grid_vtx)
+        # np.save('/Users/arqfa/OneDrive/Desktop/Research/top_grid_vtx', top_grid_vtx)
+        np.save(path + 'top_grid_vtx', top_grid_vtx)
         print("ray origins for intersection exported as 'top_grid_vtx'")
 
         # Delete "top_grid_of_analysis" since it won't be used anymore
@@ -83,7 +85,8 @@ def site_analysis(grid_size, full_site, land_extents_for_analysis, building_for_
     if level != None:
         z_level = float(level.location.z)
         print(z_level)
-        np.save('/Users/arqfa/OneDrive/Desktop/Research/z_level',
+        # np.save('/Users/arqfa/OneDrive/Desktop/Research/z_level', z_level)  # This file can be deleted once the data has been joined
+        np.save(path + 'z_level',
                 z_level)  # This file can be deleted once the data has been joined
     else:
         print("level location '" + str(level_for_implantation) + "' not found")
@@ -97,7 +100,7 @@ def site_analysis(grid_size, full_site, land_extents_for_analysis, building_for_
               building.dimensions.y,
               ", ", building.dimensions.z)
     else:
-        print("The building " + str(building_name) + "not found")
+        print("The building " + str(building_for_analysis) + "not found")
 
     # Exporting the terrain for intersection
 
@@ -181,7 +184,4 @@ def site_analysis(grid_size, full_site, land_extents_for_analysis, building_for_
     print("!!!!Visualization of intersection mesh completed as 'mesh intersection' for the site: " + str(full_site))
 
     return d, dx_rows, dy_cols, bx_rows, by_cols, bz_height
-    #return {'dx': dx_rows, 'dy': dy_cols, 'bx': bx_rows}#d, dx_rows, dy_cols, bx_rows, by_cols, bz_height
-
-
-
+    # return {'dx': dx_rows, 'dy': dy_cols, 'bx': bx_rows}#d, dx_rows, dy_cols, bx_rows, by_cols, bz_height

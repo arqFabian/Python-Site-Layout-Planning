@@ -189,13 +189,13 @@ f1_normalized = normalization_of_functions(f1_earthwork_vol)
 f2_normalized = normalization_of_functions(f2_earthwork_costs)
 f3_normalized = normalization_of_functions(f3_deforestation_value)
 
-print("The following are the scores for the " + (str(len(f1_earthwork_vol))) + " possible positions.")
+"""print("The following are the scores for the " + (str(len(f1_earthwork_vol))) + " possible positions.")
 print("For the normalized f1-earthwork volumes: ")
 print(f1_normalized)
 print("For the normalized f2-earthwork costs: ")
 print(f2_normalized)
 print("For the normalized f3-deforestation values: ")
-print(f3_normalized)
+print(f3_normalized)"""
 
 # Activation Function + final normalization
 
@@ -252,7 +252,7 @@ activated_f1 = activation_function(f1_earthwork_vol, k_factor, t0_point_value)
 activated_f2 = activation_function(f2_earthwork_costs, k_factor, t0_point_value)
 activated_f3 = activation_function(f3_deforestation_value, k_factor, t0_point_value)
 
-print("The following are the scores  after applying the activation function for the " + (
+"""print("The following are the scores  after applying the activation function for the " + (
     str(len(available_positions))) + " possible positions.")
 print("For f1-earthwork volumes: ")
 print(activated_f1)
@@ -263,7 +263,7 @@ print(activated_f3)
 
 print(max(activated_f1))
 print(max(activated_f2))
-print(max(activated_f3))
+print(max(activated_f3))"""
 
 
 # Selection of top three recommendations
@@ -285,14 +285,9 @@ def create_nested_list(*lists):
 original_values = create_nested_list(available_positions, f1_earthwork_vol, f2_earthwork_costs, f3_deforestation_value)
 # List with the normalized values
 activated_values = create_nested_list(activated_f1, activated_f2, activated_f3)
-"""
-def sum_of_values (input_list):
-    sum = math.fsum(input_list)
-    return sum
 
-scores = sum_of_values(normalized_values)
-"""
-l = []
+# Review the combination of scores
+"""l = []
 for i in range(len(activated_values)):
     j = activated_values[i]
     k = math.fsum(j)
@@ -322,4 +317,4 @@ np.save('/Users/arqfa/OneDrive/Desktop/Research/available_positions',
 print("available positions values successfully saved")
 np.save('/Users/arqfa/OneDrive/Desktop/Research/scores_positions',
         scores_position)  # This file can be deleted once the data has been joined
-print("available positions values successfully saved")
+print("available positions values successfully saved")"""

@@ -27,6 +27,7 @@ if __name__ == '__main__':
 
 # path of the blender file we are using.
 blend_file_path = bpy.path.abspath("//")  # This will update when using on different blender files.
+print (blend_file_path)
 # path to the site_layout app directory.
 slp_app_path = 'C:/Users/arqfa/PycharmProjects/site_layout'
 sys.path.append(slp_app_path)
@@ -42,8 +43,10 @@ site = "T1-West2"  # "Landscape_002"
 land = "AreaSelection8x4"
 building = "building4x4"
 level = "level_location"
+site_trees = [0, 1, 0.5, 0, 0.25] * 500  # Dummy list for trees can be deleted once the tree detection module  have
+# been calculated
 
-d, dx_rows, dy_cols, bx_rows, by_cols, bz_height = site_analysis(d, site, land, building, level)
+d, dx_rows, dy_cols, bx_rows, by_cols, bz_height = site_analysis(d, site, land, building, level, blend_file_path)
 # print(d, dx_rows, dy_cols, bx_rows, by_cols, bz_height)
 print("the site and building variables have been calculated")
 
@@ -73,7 +76,8 @@ print("The volumes per segment of grid have been calculated. There are " + str(l
 
 # fitness function module
 
-from fitness_functions import available_positions_function, f1_earthwork_vol_function, f2_earthwork_costs_function, f3_deforestation_function, activation_function
+from fitness_functions import available_positions_function, f1_earthwork_vol_function, f2_earthwork_costs_function, \
+    f3_deforestation_function, activation_function
 
 # available positions
 available_positions = available_positions_function(vtx_origin, dx_rows, dy_cols, bx_rows, by_cols)
@@ -85,9 +89,10 @@ f1_earthwork_vol = f1_earthwork_vol_function(available_positions, site_volumes)
 # f2 - Earthwork costs calculations
 f2_earthwork_costs = f2_earthwork_costs_function(available_positions, site_volumes)
 # f3 - Deforestation Value calculations
+
 f3_deforestation_value = f3_deforestation_function(available_positions, site_trees)
 
-print("fitness functions calculated successfully for " + str(len(activated_f1)) + " values")
+print("fitness functions calculated successfully for " + str(len(available_positions)) + " values")
 # Activation Function + final normalization
 k_factor = 10
 t0_point_value = 0.5
@@ -98,4 +103,4 @@ activated_f3 = activation_function(f3_deforestation_value, k_factor, t0_point_va
 
 print("activated fitness functions calculated successfully for " + str(len(activated_f1)) + " values")
 
-# hello 2
+# hello 4
