@@ -75,7 +75,7 @@ def f1_earthwork_vol_function(available_position_list, volume_list):
 
         # Formula to sum the partials representing the sum of the values per row under the building projection
         vol_sum = abs(math.fsum(partials_f1[0:int(j_max)]))
-
+        # vol_sum = math.fsum(partials_f1[0:int(j_max)])
         rounded_vol_sum = round(vol_sum, 3)
 
         # Creation of the lists with the values per position for the fitness function prior to the normalization
@@ -230,8 +230,6 @@ print("These are the results for the " + (str(len(available_positions))) + " pos
 print("For f3-deforestation value: ")
 print(f3_deforestation_value)
 
-exit()
-
 """f3_deforestation_value = []
 
 for i in range(len(available_positions)):  # determine the number of available position to calculate f1
@@ -266,66 +264,97 @@ for i in range(len(available_positions)):  # determine the number of available p
 
 # Normalization of the results
 
-
-# N1 - Normalization of the resulst for f1 - earthwork volume calculations
 def normalization_of_functions(input_list):
-    max_list = max(input_list)
-    min_list = 0
-    normalization = [(value - max_list) / (min_list - max_list) for value in input_list]
-    return normalization
+    n_list = input_list  # List to normalize
+    list_max = max(n_list)
+    print("max" + str(max(n_list)))
+    list_min = 0  # optimizing for zero
+    normalized_result = []
+    for value in n_list:
+        normalization = (list_max - value) / (list_max - list_min)
+        rounded_normalization = round(normalization, 3)
+        normalized_result.append(rounded_normalization)
+    return normalized_result
 
 
-n1_normalize_f1 = normalization_of_functions(f1_earthwork_vol)
-n2_normalize_f2 = normalization_of_functions(f2_earthwork_costs)
-n3_normalize_f3 = normalization_of_functions(f3_deforestation_value)
+f1_normalized = normalization_of_functions(f1_earthwork_vol)
+f2_normalized = normalization_of_functions(f2_earthwork_costs)
+f3_normalized = normalization_of_functions(f3_deforestation_value)
 
 print("The following are the scores for the " + (str(len(f1_earthwork_vol))) + " possible positions.")
 print("For the normalized f1-earthwork volumes: ")
-print(n1_normalize_f1)
+print(f1_normalized)
 print("For the normalized f2-earthwork costs: ")
-print(n2_normalize_f2)
+print(f2_normalized)
 print("For the normalized f3-deforestation values: ")
-print(n3_normalize_f3)
+print(f3_normalized)
 
-""""""
+# print(str(max(n1_normalize_f1)) + "min" + str(min(n1_normalize_f1)))
+# print(str(max(n2_normalize_f2)) + "min" + str(min(n2_normalize_f2)))
+# print(str(max(n3_normalize_f3)) + "min" + str(min(n3_normalize_f3)))
+
+
 # Activation Function + final normalization
-""""""
 
 
-def activation_function(input_value, k, t0):
-    return 1 / (1 + math.exp(-k * (input_value - t0)))
+def activation_function(input_list, k_penalization_factor, t0_inflection_point):
 
+    # Normalization of function, optimizing for zero
+    normalized_list = normalization_of_functions(input_list)
 
-def normalized_activation_function(activation_list):
+    # Application of activation function on normalized list
+    list_values = normalized_list
+    k_value = k_penalization_factor  # numerical value representing penalization
+    t0_point = t0_inflection_point  # number representing the inflection or tolerance of the sigmoid curve
+
+    activated_list = []
+    for value in list_values:
+        f_activation = 1 / (1 + math.exp(-k_value * (value - t0_point))) # activation function using a sigmoid function
+        activated_list.append(f_activation)
+
+    # Once again normalization of activated list because of numerical shift due to k and t0 values.
+    min_list = min(activated_list)
     max_list = 1  # This value is the ideal scenario
-    min_list = min(activation_list)
-    normalized_list = [(value - min_list) / (max_list - min_list) for value in activation_list]
+    normalized_activated_list = []
+    for value in activated_list:
+        normalization = (value - min_list) / (max_list - min_list)
+        rounded_normalization = round(normalization, 3)
+        normalized_activated_list.append(rounded_normalization)
+    print("max value" + str(max(normalized_activated_list)))
+    return normalized_activated_list
+
+
+def normalized_activation_function(activated_list):
+    a_list = activated_list
+    max_list = 1  # This value is the ideal scenario
+    min_list = min(a_list)
+    normalized_list = []
+    for value in a_list:
+        normalization = (value - min_list) / (max_list - min_list)
+        rounded_normalization = (normalization, 3)
+        normalized_list.append(rounded_normalization)
     return normalized_list
 
 
 # Activation for normalized n1_normalized_f1
-k_penalization_factor = 10
-t0_inflection_point = 0.5
+k_factor = 10
+t0_point_value = 0.5
 
-activation_n1 = [activation_function(value, k_penalization_factor, t0_inflection_point) for value in n1_normalize_f1]
-activation_n2 = [activation_function(value, k_penalization_factor, t0_inflection_point) for value in n2_normalize_f2]
-activation_n3 = [activation_function(value, k_penalization_factor, t0_inflection_point) for value in n3_normalize_f3]
+activated_f1 = activation_function(f1_earthwork_vol, k_factor, t0_point_value)
+activated_f2 = activation_function(f2_earthwork_costs, k_factor, t0_point_value)
+activated_f3 = activation_function(f3_deforestation_value, k_factor, t0_point_value)
 
-normalized_activation_n1 = normalized_activation_function(activation_n1)
-normalized_activation_n2 = normalized_activation_function(activation_n2)
-normalized_activation_n3 = normalized_activation_function(activation_n3)
 
 print("The following are the scores  after applying the activation function for the " + (
-    str(len(f1_earthwork_vol))) + "possible positions.")
-print("For the normalized f1-earthwork volumes: ")
-# print(activation_n1)
-print(normalized_activation_n1)
-print("For the normalized f2-earthwork scores: ")
-# print(activation_n2)
-print(normalized_activation_n2)
-print("For the normalized f3-deforestation values: ")
-# print(activation_n3)
-print(normalized_activation_n3)
+    str(len(available_positions))) + "possible positions.")
+print("For f1-earthwork volumes: ")
+print(activated_f1)
+print("For f2-earthwork scores: ")
+print(activated_f2)
+print("For f3-deforestation values: ")
+print(activated_f3)
+
+exit()
 
 """"""
 
@@ -348,7 +377,7 @@ def create_nested_list(*lists):
 # list with the original values
 original_values = create_nested_list(available_positions, f1_earthwork_vol, f2_earthwork_costs, f3_deforestation_value)
 # List with the normalized values
-normalized_values = create_nested_list(normalized_activation_n1, normalized_activation_n2, normalized_activation_n3)
+activated_values = create_nested_list(activated_f1, activated_f2, activated_f3)
 """
 def sum_of_values (input_list):
     sum = math.fsum(input_list)
@@ -357,8 +386,8 @@ def sum_of_values (input_list):
 scores = sum_of_values(normalized_values)
 """
 l = []
-for i in range(len(normalized_values)):
-    j = normalized_values[i]
+for i in range(len(activated_values)):
+    j = activated_values[i]
     k = math.fsum(j)
     l.append(k)
 
