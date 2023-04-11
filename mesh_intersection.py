@@ -38,11 +38,11 @@ locations = np.array(locations)
 index_ray = np.array(index_ray)
 inds = index_ray.argsort()
 vtx_intersection = locations[inds]
-#print("this is the sorted list: " + str(sortedIntersections))
+# print("this is the sorted list: " + str(sortedIntersections))
 print("Number of intersections: " + str(len(vtx_intersection)))
 # add a condition that verifies if the number of intersections is similar to the number of rays if not report an error
 
 
-#saving the intersections as "vtx_intersection.npy" file
+# saving the intersections as "vtx_intersection.npy" file
 np.save('/Users/arqfa/OneDrive/Desktop/Research/vtx_intersection', vtx_intersection)
 

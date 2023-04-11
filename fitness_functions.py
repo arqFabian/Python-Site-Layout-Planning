@@ -80,50 +80,16 @@ def f1_earthwork_vol_function(available_position_list, volume_list):
 
         # Creation of the lists with the values per position for the fitness function prior to the normalization
         f1.append(rounded_vol_sum)
-    # print(("These are the results for the ") + (str(len(f1))) +(" possible positions"))
-    # print("For f1-earthwork volumes: ")
-    # print(f1)
+
     return f1
 
 
 f1_earthwork_vol = f1_earthwork_vol_function(available_positions, site_volumes)
-print("These are the results for the " + (str(len(f1_earthwork_vol))) + " possible positions")
-print("For f1-earthwork volumes (m3): ")
-print(f1_earthwork_vol)
-
-# exit()
 
 
-"""f1_earthwork_vol = []
-
-for i in range(len(available_positions)):  # determine the number of available position to calculate f1
-    max_j = (by_cols / D)
-    partials_f1 = []
-    for j in range(
-            int(max_j)):  # determine the number of rows to add up equivalent to the number of rows of the building projection
-        # determines the partial intervals of sums that add up to the building projection
-        min_k = j * (dx_rows / D) + i
-        max_k = min_k + (bx_rows / D)
-
-        # F1 - Earthwork volumes
-        function1 = (math.fsum(volumes[int(min_k):int(max_k)]))  # Formula for fitness function f1_earthwork_volumes
-        partials_f1.append(function1)
-
-    
-    #optional checkpoint of the iterations
-    #print("the partials for f1, f2, f3 respectively are: ")
-    #print(partials_f1)
-    
-
-    # Formula to sum the partials representing the sum of the values per row under the building projection
-    y = abs(math.fsum(partials_f1[0:int(max_j)]))
-
-    # Creation of the lists with the values per position for the fitness function prior to the normalization
-    f1_earthwork_vol.append(y)
-# print(("These are the results for the ") + (str(len(f1_earthwork_vol))) +(" possible positions"))
-# print("For f1-earthwork volumes: ")
-# print(f1_earthwork_vol)"""  # previous fitness function 1 before "python function" conversion. delete!!!
-
+# print("These are the results for the " + (str(len(f1_earthwork_vol))) + " possible positions")
+# print("For f1-earthwork volumes (m3): ")
+# print(f1_earthwork_vol)
 
 # f2 - Earthwork costs calculations
 
@@ -159,40 +125,11 @@ def f2_earthwork_costs_function(available_position_list, volume_list):
 
 
 f2_earthwork_costs = f2_earthwork_costs_function(available_positions, site_volumes)
-print("These are the results for the " + (str(len(available_positions))) + " possible positions")
-print("For f2-earthwork costs: ")
-print(f2_earthwork_costs)
 
-"""f2_earthwork_costs = []
 
-for i in range(len(available_positions)):  # determine the number of available position to calculate f1
-    max_j = (by_cols / D)
-    partials_f2 = []
-    for j in range(
-            int(max_j)):  # determine the number of rows to add up equivalent to the number of rows of the building projection
-        # determines the partial intervals of sums that add up to the building projection
-        min_k = j * (dx_rows / D) + i
-        max_k = min_k + (bx_rows / D)
-
-        # F2 - Earthwork Costs
-        function2 = abs(math.fsum(volumes[int(min_k):int(max_k)]))
-        partials_f2.append(function2)
-    
-    #optional checkpoint of the iterations
-    print("the partials for f2 respectively are: ")
-    print(partials_f2)
-    
-
-    # Formula to sum the partials representing the sum of the values per row under the building projection
-
-    y = (math.fsum(partials_f2[0:int(max_j)])) * int(Unit_price)
-
-    # Creation of the lists with the values per position for the fitness function prior to the normalization
-    f2_earthwork_costs.append(y)
-# print(("These are the results for the ") + (str(len(f1_earthwork_vol))) +(" possible positions"))
+# print("These are the results for the " + (str(len(available_positions))) + " possible positions")
 # print("For f2-earthwork costs: ")
-# print(f2_earthwork_costs)"""  # previous fitness function 2 before "python function" conversion delete!!
-
+# print(f2_earthwork_costs)
 
 # f3 - Deforestation Value calculations
 
@@ -226,54 +163,25 @@ def f3_deforestation_function(available_position_list, tree_list):
 
 
 f3_deforestation_value = f3_deforestation_function(available_positions, site_trees)
-print("These are the results for the " + (str(len(available_positions))) + " possible positions")
-print("For f3-deforestation value: ")
-print(f3_deforestation_value)
 
-"""f3_deforestation_value = []
 
-for i in range(len(available_positions)):  # determine the number of available position to calculate f1
-    max_j = (by_cols / D)
-
-    partials_f3 = []
-    for j in range(
-            int(max_j)):  # determine the number of rows to add up equivalent to the number of rows of the building projection
-        # determines the partial intervals of sums that add up to the building projection
-        min_k = j * (dx_rows / D) + i
-        max_k = min_k + (bx_rows / D)
-
-        # F3 - Deforestation Value
-        function3 = math.fsum(Trees[int(min_k):int(max_k)])
-        partials_f3.append(function3)
-
-    
-    #optional checkpoint of the iterations
-    print("the partials f3 respectively are: ")
-    print(partials_f3)
-    
-
-    # Formula to sum the partials representing the sum of the values per row under the building projection
-    y = (math.fsum(partials_f3[0:int(max_j)]))
-
-    # Creation of the lists with the values per position for the fitness function prior to the normalization
-    f3_deforestation_value.append(y)
-# print(("These are the results for the ") + (str(len(f1_earthwork_vol))) +(" possible positions"))
+# print("These are the results for the " + (str(len(available_positions))) + " possible positions")
 # print("For f3-deforestation value: ")
-# print(f3_deforestation_value)"""  # previous fitness function 3 before "python function" conversion delete!!
-
+# print(f3_deforestation_value)
 
 # Normalization of the results
 
 def normalization_of_functions(input_list):
     n_list = input_list  # List to normalize
     list_max = max(n_list)
-    print("max" + str(max(n_list)))
+    print("max original " + str(max(n_list)))
     list_min = 0  # optimizing for zero
     normalized_result = []
     for value in n_list:
         normalization = (list_max - value) / (list_max - list_min)
         rounded_normalization = round(normalization, 3)
         normalized_result.append(rounded_normalization)
+    print("max normalized " + str(max(normalized_result)))
     return normalized_result
 
 
@@ -289,16 +197,10 @@ print(f2_normalized)
 print("For the normalized f3-deforestation values: ")
 print(f3_normalized)
 
-# print(str(max(n1_normalize_f1)) + "min" + str(min(n1_normalize_f1)))
-# print(str(max(n2_normalize_f2)) + "min" + str(min(n2_normalize_f2)))
-# print(str(max(n3_normalize_f3)) + "min" + str(min(n3_normalize_f3)))
-
 
 # Activation Function + final normalization
 
-
 def activation_function(input_list, k_penalization_factor, t0_inflection_point):
-
     # Normalization of function, optimizing for zero
     normalized_list = normalization_of_functions(input_list)
 
@@ -309,7 +211,7 @@ def activation_function(input_list, k_penalization_factor, t0_inflection_point):
 
     activated_list = []
     for value in list_values:
-        f_activation = 1 / (1 + math.exp(-k_value * (value - t0_point))) # activation function using a sigmoid function
+        f_activation = 1 / (1 + math.exp(-k_value * (value - t0_point)))  # activation function using a sigmoid function
         activated_list.append(f_activation)
 
     # Once again normalization of activated list because of numerical shift due to k and t0 values.
@@ -320,20 +222,8 @@ def activation_function(input_list, k_penalization_factor, t0_inflection_point):
         normalization = (value - min_list) / (max_list - min_list)
         rounded_normalization = round(normalization, 3)
         normalized_activated_list.append(rounded_normalization)
-    print("max value" + str(max(normalized_activated_list)))
+    print("max activated " + str(max(normalized_activated_list)))
     return normalized_activated_list
-
-
-def normalized_activation_function(activated_list):
-    a_list = activated_list
-    max_list = 1  # This value is the ideal scenario
-    min_list = min(a_list)
-    normalized_list = []
-    for value in a_list:
-        normalization = (value - min_list) / (max_list - min_list)
-        rounded_normalization = (normalization, 3)
-        normalized_list.append(rounded_normalization)
-    return normalized_list
 
 
 # Activation for normalized n1_normalized_f1
@@ -344,9 +234,8 @@ activated_f1 = activation_function(f1_earthwork_vol, k_factor, t0_point_value)
 activated_f2 = activation_function(f2_earthwork_costs, k_factor, t0_point_value)
 activated_f3 = activation_function(f3_deforestation_value, k_factor, t0_point_value)
 
-
 print("The following are the scores  after applying the activation function for the " + (
-    str(len(available_positions))) + "possible positions.")
+    str(len(available_positions))) + " possible positions.")
 print("For f1-earthwork volumes: ")
 print(activated_f1)
 print("For f2-earthwork scores: ")
@@ -354,12 +243,17 @@ print(activated_f2)
 print("For f3-deforestation values: ")
 print(activated_f3)
 
-exit()
+print(max(activated_f1))
+print(max(activated_f2))
+print(max(activated_f3))
+
+
+
 
 """"""
 
 
-# Selection of top three recomendations
+# Selection of top three recommendations
 
 # This section combines the results of the three functions as sublists of a master List that can later be tabulated
 
@@ -401,14 +295,14 @@ print(original_values)
 print("######################################")
 print(
     "List with all the normalized values per position is as follows with the first value being the vertex id, followed by the normalized activation of f1, f2, f3 respectively:")
-print(normalized_values)
+print(activated_values)
 print("######################################")
 print(scores_position)
 print("######################################")
 # print(scores)
 
 np.save('/Users/arqfa/OneDrive/Desktop/Research/normalized_values',
-        normalized_values)  # This file can be deleted once the data has been joined
+        activated_values)  # This file can be deleted once the data has been joined
 print("normalized values successfully saved")
 np.save('/Users/arqfa/OneDrive/Desktop/Research/available_positions',
         available_positions)  # This file can be deleted once the data has been joined

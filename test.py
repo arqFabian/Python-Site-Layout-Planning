@@ -1,48 +1,7 @@
-# This script was created to run a Site Design Analysis experiment
-# using accepted earthwork analysis formulas based in prismoidal
-# analysis to calculate accurately volumes of earth.
-
-# imports necessary
-import bpy, bmesh
-import os
-import sys
-import glob
-import csv
-import math
-import numpy as np
-import subprocess
-from os import system
-
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'{name}')  # Press Ctrl+F8 to toggle the breakpoint.
-
-
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('Site Layout Planning Optimization')
-
-# defining the paths for the project
-
-# path of the blender file we are using.
-blend_file_path = bpy.path.abspath("//")  # This will update when using on different blender files.
-# path to the site_layout app directory.
-slp_app_path = 'C:/Users/arqfa/PycharmProjects/site_layout'
-sys.path.append(slp_app_path)
 
 # importing the blender_mesh module for measuring and intersection
 
 from blender_mesh import site_analysis
-
-building_name = "building4x4"
-d = 1
-site = "T1-West2"#"Landscape_002"
-land = "AreaSelection8x4"
-building = "building4x4"
-level = "level_location"
-
-
 
 d, dx_rows, dy_cols, bx_rows, by_cols, bz_height = site_analysis(d, site, land, building, level)
 #print(d, dx_rows, dy_cols, bx_rows, by_cols, bz_height)
@@ -99,4 +58,3 @@ activated_f3 = activation_function(f3_deforestation_value, k_factor, t0_point_va
 
 print("activated fitness functions calculated successfully for " + str(len(activated_f1)) + " values")
 
-# hello

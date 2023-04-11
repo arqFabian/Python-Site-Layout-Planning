@@ -71,13 +71,8 @@ def volume_formula(distance_x, distance_y, d_dist_btw_axes, z_intersection_list,
             b = level_difference[int(j + x / h + 1)]
             grid_area = (a + b) / 2
             areas.append(grid_area)
-    print("areas by axis X " + str(len(areas)) + str(areas))
-    """areas = []
-    # i_max =
-    for i in range (int(len(level_difference))-9):
-        a = ((level_difference[i] + level_difference[i+8])*(d/2))
-        areas.append(a)
-    #print("areas by axis X" + str(len(areas)) + str(areas))"""  # delete
+    #print("areas by axis X " + str(len(areas)) + str(areas))
+
 
     # !!!!!!code for volume!!!!
     # Prismoid formula : V = (A1+A2)*d/2 ;
@@ -89,7 +84,7 @@ def volume_formula(distance_x, distance_y, d_dist_btw_axes, z_intersection_list,
         for j in range(int(i_min), int(i_max)):
             v = ((areas[j] + areas[(j + 1)]) / 2) * h
             volumes.append(v)
-    print("volumes by axis X: " + str(len(volumes)) + str(volumes))
+    #print("volumes by axis X: " + str(len(volumes)) + str(volumes))
     return volumes
 
 
