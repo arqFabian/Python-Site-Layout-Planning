@@ -32,8 +32,13 @@ print (blender_file_path)
 slp_app_path = 'C:/Users/arqfa/PycharmProjects/site_layout'
 sys.path.append(slp_app_path)
 
-# importing the blender_mesh module for measuring and intersection
+#cleaning the console for a fresh start on the execution
 
+cls = lambda: system('cls')
+
+cls() #this function call will clear the console
+
+# importing the blender_mesh module for measuring and intersection
 
 from blender_mesh import site_analysis
 
@@ -46,7 +51,7 @@ level = "level_location"
 site_trees = [0, 1, 0.5, 0, 0.25] * 500  # Dummy list for trees can be deleted once the tree detection module  have
 # been calculated
 
-d, dx_rows, dy_cols, bx_rows, by_cols, bz_height = site_analysis(d, site, land, building, level, blender_file_path)
+d, dx_rows, dy_cols, bx_rows, by_cols, bz_height = site_analysis(d, site, land, building, level, blender_file_path, slp_app_path)
 # print(d, dx_rows, dy_cols, bx_rows, by_cols, bz_height)
 print("the site and building variables have been calculated")
 

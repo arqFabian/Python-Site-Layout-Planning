@@ -15,7 +15,7 @@ from os import system
 
 # start of process def export():
 def site_analysis(grid_size, full_site, land_extents_for_analysis, building_for_analysis, level_for_implantation,
-                  blender_file_path, python_file_path):
+                  blender_file_path, slp_app_file_path, ):
     # determine the variables from the inputs
 
     d = grid_size
@@ -67,7 +67,6 @@ def site_analysis(grid_size, full_site, land_extents_for_analysis, building_for_
         vtx_position = [x for l in vtx for x in l]
         vtx_id = len(vtx)
         top_grid_vtx = np.array_split(vtx_position, vtx_id)
-        # np.save('/Users/arqfa/OneDrive/Desktop/Research/top_grid_vtx', top_grid_vtx)
         np.save(blender_file_path + 'top_grid_vtx', top_grid_vtx)
         print("ray origins for intersection exported as 'top_grid_vtx'")
 
@@ -156,8 +155,8 @@ def site_analysis(grid_size, full_site, land_extents_for_analysis, building_for_
     # to calculate the intersection between the GRID and the terrain, run the file mesh_intersection.py that uses
     # trimesh to launch rays from the grid vertex and determines the intersection with the site.
 
-    command = ['/Users/arqfa/PycharmProjects/pythonProject/venv/Scripts/python',
-               python_file_path + 'mesh_intersection.py']
+    command = [slp_app_file_path + '/venv/Scripts/python',
+               slp_app_file_path + 'mesh_intersection.py']
     print(f'Running \"{" ".join(command)}\"')
     subprocess.call(command, shell=True)
     # load trimesh intersection lists.
@@ -181,7 +180,7 @@ def site_analysis(grid_size, full_site, land_extents_for_analysis, building_for_
     mesh.from_pydata(vtx_intersection, [], faces)
     obj = bpy.data.objects.new("mesh_intersection", mesh)
     bpy.context.scene.collection.objects.link(obj)
-    print("modification check!!!!Visualization of intersection mesh completed as 'mesh intersection' for the site: " + str(full_site))
+    print('Visualization of intersection mesh completed as "mesh_intersection" for the site: ' + str(full_site))
 
     return d, dx_rows, dy_cols, bx_rows, by_cols, bz_height
     # return {'dx': dx_rows, 'dy': dy_cols, 'bx': bx_rows}#d, dx_rows, dy_cols, bx_rows, by_cols, bz_height
