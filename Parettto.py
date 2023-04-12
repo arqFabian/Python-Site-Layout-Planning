@@ -82,4 +82,4 @@ results = pareto_optimization([f1, f2, f3], bounds, weights)
 for i, x in enumerate(results):
     print(f"Candidate {i+1}:")
     print("Optimal x: ", x)
-    print("Optimal objective values: ", [g1(x), f2(x), s_func(g3(x))])
+    print("Optimal objective values: ", [f1(x), f2(x), f3(x)])

@@ -12,6 +12,7 @@ import math
 import numpy as np
 import subprocess
 from os import system
+from scipy.optimize import minimize
 
 
 def print_hi(name):
@@ -59,16 +60,6 @@ print("the site and building variables have been calculated")
 
 from Volume_calculation import z_coordinate_extraction, volume_formula
 
-"""top_grid_vtx = np.load(blender_file_path + 'top_grid_vtx.npy')
-print("origin vertex loaded")
-# load intersection vertex
-vtx_intersection = np.load(blender_file_path + 'vtx_intersection.npy')
-print("Intersection data loaded")
-# load level z location for volume calculations
-z_level = np.load(blender_file_path + 'z_level.npy')
-print("Required level of platform loaded")
-print(z_level)"""
-top_grid_vtx
 z_coord_intersection = z_coordinate_extraction(vtx_intersection)
 z_coord_land = z_coordinate_extraction(top_grid_vtx)
 
@@ -83,7 +74,7 @@ print("The volumes per segment of grid have been calculated. There are " + str(l
 # fitness function module
 
 from fitness_functions import available_positions_function, f1_earthwork_vol_function, f2_earthwork_costs_function, \
-    f3_deforestation_function, activation_function
+    f3_deforestation_function, activation_function, create_nested_list
 
 # available positions
 available_positions = available_positions_function(top_grid_vtx, dx_rows, dy_cols, bx_rows, by_cols)

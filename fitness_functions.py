@@ -169,7 +169,7 @@ f3_deforestation_value = f3_deforestation_function(available_positions, site_tre
 # print("For f3-deforestation value: ")
 # print(f3_deforestation_value)
 
-# Normalization of the results
+# Normalization of the results. This function was incorporated as part of the activation function
 
 def normalization_of_functions(input_list):
     n_list = input_list  # List to normalize
@@ -181,7 +181,7 @@ def normalization_of_functions(input_list):
         normalization = (list_max - value) / (list_max - list_min)
         rounded_normalization = round(normalization, 3)
         normalized_result.append(rounded_normalization)
-    print("max normalized " + str(max(normalized_result)))
+    # print("max normalized " + str(max(normalized_result)))
     return normalized_result
 
 
@@ -198,32 +198,6 @@ print("For the normalized f3-deforestation values: ")
 print(f3_normalized)"""
 
 # Activation Function + final normalization
-
-"""def activation_function(input_list, k_penalization_factor, t0_inflection_point):
-    # Normalization of function, optimizing for zero
-    normalized_list = normalization_of_functions(input_list)
-
-    # Application of activation function on normalized list
-    list_values = normalized_list
-    k_value = k_penalization_factor  # numerical value representing penalization
-    t0_point = t0_inflection_point  # number representing the inflection or tolerance of the sigmoid curve
-
-    activated_list = []
-    for value in list_values:
-        f_activation = 1 / (1 + math.exp(-k_value * (value - t0_point)))  # activation function using a sigmoid function
-        activated_list.append(f_activation)
-
-    # Once again normalization of activated list because of numerical shift due to k and t0 values.
-    min_list = min(activated_list)
-    max_list = 1  # This value is the ideal scenario
-    normalized_activated_list = []
-    for value in activated_list:
-        normalization = (value - min_list) / (max_list - min_list)
-        rounded_normalization = round(normalization, 3)
-        normalized_activated_list.append(rounded_normalization)
-    print("max activated " + str(max(normalized_activated_list)))
-    return normalized_activated_list"""
-
 
 def activation_function(input_list, k_penalization_factor, t0_inflection_point):
     # Normalization of function, optimizing for zero
@@ -282,11 +256,62 @@ def create_nested_list(*lists):
 
 
 # list with the original values
-original_values = create_nested_list(available_positions, f1_earthwork_vol, f2_earthwork_costs, f3_deforestation_value)
+original_values = list(zip(available_positions, f1_earthwork_vol, f2_earthwork_costs, f3_deforestation_value))
+
+#original_values = create_nested_list(available_positions, f1_earthwork_vol, f2_earthwork_costs, f3_deforestation_value)
 # List with the normalized values
-activated_values = create_nested_list(activated_f1, activated_f2, activated_f3)
+activated_values = list(zip(activated_f1, activated_f2, activated_f3))
+#activated_values = create_nested_list(activated_f1, activated_f2, activated_f3)
 
 # Review the combination of scores
+
+"""def temp_optimization_sorting(number_of_solutions, activated_values_list, available_positions_list, weights_input):
+    optimization_list = []
+    for i in range(len(activated_values_list)):
+        j = activated_values_list[i]
+        weighted_list = j[0]*weights[0] + j[1]*weights_input[1] + j[2]*weights_input[2]
+        weighted_list_rounded = weighted_list.__round__(3)
+        optimization_list.append(weighted_list_rounded)
+
+    score_values = create_nested_list(available_positions_list, optimization_list)
+    print('score_values calculated')
+    score_values.sort(key=lambda x: x[1], reverse=True)
+    print(score_values)
+    for i in range (int(number_of_solutions)):
+        print(f"Candidate {i + 1}:")
+        candidate = score_values[i]
+        print("Position: ", candidate[0])
+        print("Score: ", candidate[1])
+
+    return score_values"""
+
+def temp_optimization_sorting(number_of_solutions, activated_values_list, available_positions_list, weights_input):
+
+    optimization_list = [round(sum(w*a for w, a in zip(weights_input, vals)), 3) for vals in activated_values_list]
+    f1, f2, f3 = zip(*activated_values_list)
+    score_values = list(zip(available_positions_list, optimization_list, f1, f2, f3))
+    score_values_sorted = sorted(score_values, key=lambda x: x[1], reverse=True)
+
+    print('score_values calculated')
+    for i in range(int(number_of_solutions)):
+        print(f"Candidate {i + 1}:")
+        candidate = score_values_sorted[i]
+        print("Position: ", candidate[0])
+        print("Score: ", candidate[1])
+        print("function 1: ", candidate[2])
+        print("function 2: ", candidate[3])
+        print("function 3: ", candidate[4])
+
+    return score_values_sorted, score_values
+
+
+weights = [0.5, 0.3, 0.2]
+n_solutions = 2
+score_values_list = temp_optimization_sorting(n_solutions, activated_values, available_positions,weights)
+print("candidates sorted")
+
+#table_list = create_nested_list(score_values_list, activated_f1, activated_f2, activated_f3)
+#print(table_list[2])
 """l = []
 for i in range(len(activated_values)):
     j = activated_values[i]

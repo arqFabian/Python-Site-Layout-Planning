@@ -66,10 +66,5 @@ print("available positions successfully loaded")
 
 number_solutions = 5
 
-my_list = scores_positions
-
-sorted_list = sorted(my_list, key=lambda x: x[1])
-
-print(sorted_list)
 
 slp_plot = radar_plot(normalized_values, available_positions, number_solutions)
