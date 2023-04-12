@@ -11,8 +11,11 @@ import csv
 import math
 import numpy as np
 import subprocess
+import matplotlib.pyplot as plt
 from os import system
 from scipy.optimize import minimize
+from mpl_toolkits import mplot3d
+from mpl_toolkits.mplot3d import Axes3D
 
 
 def print_hi(name):
@@ -74,7 +77,7 @@ print("The volumes per segment of grid have been calculated. There are " + str(l
 # fitness function module
 
 from fitness_functions import available_positions_function, f1_earthwork_vol_function, f2_earthwork_costs_function, \
-    f3_deforestation_function, activation_function, create_nested_list
+    f3_deforestation_function, activation_function, temp_optimization_sorting
 
 # available positions
 available_positions = available_positions_function(top_grid_vtx, dx_rows, dy_cols, bx_rows, by_cols)
@@ -86,7 +89,6 @@ f1_earthwork_vol = f1_earthwork_vol_function(available_positions, site_volumes)
 # f2 - Earthwork costs calculations
 f2_earthwork_costs = f2_earthwork_costs_function(available_positions, site_volumes)
 # f3 - Deforestation Value calculations
-
 f3_deforestation_value = f3_deforestation_function(available_positions, site_trees)
 
 print("fitness functions calculated successfully for " + str(len(available_positions)) + " values")
@@ -98,6 +100,19 @@ activated_f1 = activation_function(f1_earthwork_vol, k_factor, t0_point_value)
 activated_f2 = activation_function(f2_earthwork_costs, k_factor, t0_point_value)
 activated_f3 = activation_function(f3_deforestation_value, k_factor, t0_point_value)
 
+activated_values = list(zip(activated_f1, activated_f2, activated_f3))
 print("activated fitness functions calculated successfully for " + str(len(activated_f1)) + " values")
 
-# hello 5
+
+# optimization and sorting of solutions
+weights = [0.5, 0.3, 0.2]
+n_solutions = 2
+score_values_sorted, score_values = temp_optimization_sorting(n_solutions, activated_values, available_positions,weights)
+print("candidates sorted")
+
+np.save(blender_file_path + '/score_values',
+        score_values)  # This file can be deleted once the data has been joined
+print("score values successfully saved")
+np.save(blender_file_path + '/score_values_sorted',
+        score_values_sorted)  # This file can be deleted once the data has been joined
+print("sorted score values successfully saved")

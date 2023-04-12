@@ -11,7 +11,7 @@ dy_cols = 20
 bx_rows = 4
 by_cols = 4
 D = 1  # module size
-
+blender_file_path = "/Users/arqfa/OneDrive/Desktop/Research"
 
 def available_positions_function(list_of_vertex, distance_x, distance_y, building_x, building_y):
     # verts = list_of_vertex
@@ -31,7 +31,7 @@ def available_positions_function(list_of_vertex, distance_x, distance_y, buildin
     return available_positions_on_site
 
 
-vtx_origin = np.load('/Users/arqfa/OneDrive/Desktop/Research/top_grid_vtx.npy')
+vtx_origin = np.load(blender_file_path + '/top_grid_vtx.npy')
 print("origin vertex loaded")
 available_positions = available_positions_function(vtx_origin, dx_rows, dy_cols, bx_rows, by_cols)
 print("there are " + str(len(available_positions)) + " available positions on the grid")
@@ -42,7 +42,7 @@ This lists need to be replaced with their equivalent from the actual data.
 Specifically "Volumes" and "Trees"
 """
 
-site_volumes = np.load('/Users/arqfa/OneDrive/Desktop/Research/site_volumes.npy')
+site_volumes = np.load(blender_file_path + '/site_volumes.npy')
 # volumes =list(range(-10,200)) #substitute this volume list for the actual calculations
 # volumes = [-1]*8+[2]*8+[-3]*8+[-4]*8
 site_trees = [0, 1, 0.5, 0, 0.25] * 100
@@ -244,24 +244,12 @@ print(max(activated_f3))"""
 
 # This section combines the results of the three functions as sublist of a master List that can later be tabulated
 
-# This function concatenates several lists based on the order that they are put as input
-def create_nested_list(*lists):
-    nested_list = []
-    for i in range(len(lists[0])):
-        inner_list = []
-        for j in range(len(lists)):
-            inner_list.append(lists[j][i])
-        nested_list.append(inner_list)
-    return nested_list
-
 
 # list with the original values
 original_values = list(zip(available_positions, f1_earthwork_vol, f2_earthwork_costs, f3_deforestation_value))
 
-#original_values = create_nested_list(available_positions, f1_earthwork_vol, f2_earthwork_costs, f3_deforestation_value)
 # List with the normalized values
 activated_values = list(zip(activated_f1, activated_f2, activated_f3))
-#activated_values = create_nested_list(activated_f1, activated_f2, activated_f3)
 
 # Review the combination of scores
 
@@ -289,26 +277,34 @@ def temp_optimization_sorting(number_of_solutions, activated_values_list, availa
 
     optimization_list = [round(sum(w*a for w, a in zip(weights_input, vals)), 3) for vals in activated_values_list]
     f1, f2, f3 = zip(*activated_values_list)
-    score_values = list(zip(available_positions_list, optimization_list, f1, f2, f3))
-    score_values_sorted = sorted(score_values, key=lambda x: x[1], reverse=True)
+    scores = list(zip(available_positions_list, optimization_list, f1, f2, f3))
+    print('Scores for the available positions calculated successfully')
+    scores_sorted = sorted(scores, key=lambda x: x[1], reverse=True)
+    print('scores sorted successfully')
 
-    print('score_values calculated')
     for i in range(int(number_of_solutions)):
         print(f"Candidate {i + 1}:")
-        candidate = score_values_sorted[i]
+        candidate = scores_sorted[i]
         print("Position: ", candidate[0])
         print("Score: ", candidate[1])
         print("function 1: ", candidate[2])
         print("function 2: ", candidate[3])
         print("function 3: ", candidate[4])
 
-    return score_values_sorted, score_values
+    return scores_sorted, scores
 
 
 weights = [0.5, 0.3, 0.2]
 n_solutions = 2
-score_values_list = temp_optimization_sorting(n_solutions, activated_values, available_positions,weights)
+score_values_sorted, score_values = temp_optimization_sorting(n_solutions, activated_values, available_positions,weights)
 print("candidates sorted")
+
+np.save(blender_file_path + '/score_values',
+        score_values)  # This file can be deleted once the data has been joined
+print("score values successfully saved")
+np.save(blender_file_path + '/score_values_sorted',
+        score_values_sorted)  # This file can be deleted once the data has been joined
+print("sorted score values successfully saved")
 
 #table_list = create_nested_list(score_values_list, activated_f1, activated_f2, activated_f3)
 #print(table_list[2])
