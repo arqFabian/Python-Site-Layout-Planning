@@ -103,4 +103,4 @@ activated_f3 = activation_function(f3_deforestation_value, k_factor, t0_point_va
 
 print("activated fitness functions calculated successfully for " + str(len(activated_f1)) + " values")
 
-# hello 4
+# hello 5
