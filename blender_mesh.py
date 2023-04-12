@@ -182,5 +182,5 @@ def site_analysis(grid_size, full_site, land_extents_for_analysis, building_for_
     bpy.context.scene.collection.objects.link(obj)
     print('Visualization of intersection mesh completed as "mesh_intersection" for the site: ' + str(full_site))
 
-    return d, dx_rows, dy_cols, bx_rows, by_cols, bz_height
+    return d, dx_rows, dy_cols, bx_rows, by_cols, bz_height, z_level, top_grid_vtx, vtx_intersection
     # return {'dx': dx_rows, 'dy': dy_cols, 'bx': bx_rows}#d, dx_rows, dy_cols, bx_rows, by_cols, bz_height

@@ -51,7 +51,7 @@ level = "level_location"
 site_trees = [0, 1, 0.5, 0, 0.25] * 500  # Dummy list for trees can be deleted once the tree detection module  have
 # been calculated
 
-d, dx_rows, dy_cols, bx_rows, by_cols, bz_height = site_analysis(d, site, land, building, level, blender_file_path, slp_app_path)
+d, dx_rows, dy_cols, bx_rows, by_cols, bz_height, z_level, top_grid_vtx, vtx_intersection = site_analysis(d, site, land, building, level, blender_file_path, slp_app_path)
 # print(d, dx_rows, dy_cols, bx_rows, by_cols, bz_height)
 print("the site and building variables have been calculated")
 
@@ -59,7 +59,7 @@ print("the site and building variables have been calculated")
 
 from Volume_calculation import z_coordinate_extraction, volume_formula
 
-vtx_origin = np.load(blender_file_path + 'top_grid_vtx.npy')
+"""top_grid_vtx = np.load(blender_file_path + 'top_grid_vtx.npy')
 print("origin vertex loaded")
 # load intersection vertex
 vtx_intersection = np.load(blender_file_path + 'vtx_intersection.npy')
@@ -67,9 +67,10 @@ print("Intersection data loaded")
 # load level z location for volume calculations
 z_level = np.load(blender_file_path + 'z_level.npy')
 print("Required level of platform loaded")
-print(z_level)
+print(z_level)"""
+top_grid_vtx
 z_coord_intersection = z_coordinate_extraction(vtx_intersection)
-z_coord_land = z_coordinate_extraction(vtx_origin)
+z_coord_land = z_coordinate_extraction(top_grid_vtx)
 
 # print(str(len(z_coord_intersection)) + str(z_coord_intersection[0:5]))
 # print(str(len(z_coord_land)) + str(z_coord_land[0:5]))
@@ -85,9 +86,9 @@ from fitness_functions import available_positions_function, f1_earthwork_vol_fun
     f3_deforestation_function, activation_function
 
 # available positions
-available_positions = available_positions_function(vtx_origin, dx_rows, dy_cols, bx_rows, by_cols)
+available_positions = available_positions_function(top_grid_vtx, dx_rows, dy_cols, bx_rows, by_cols)
 print("there are " + str(len(available_positions)) + " available positions on the grid from the original " + str(
-    len(vtx_origin)))
+    len(top_grid_vtx)))
 
 # f1 - Earthwork volumes calculations function
 f1_earthwork_vol = f1_earthwork_vol_function(available_positions, site_volumes)
