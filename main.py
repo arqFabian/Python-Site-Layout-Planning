@@ -54,13 +54,13 @@ print("the site and building variables have been calculated")
 
 from Volume_calculation import z_coordinate_extraction, volume_formula
 
-vtx_origin = np.load('/Users/arqfa/OneDrive/Desktop/Research/top_grid_vtx.npy')
+vtx_origin = np.load(blend_file_path + 'top_grid_vtx.npy')
 print("origin vertex loaded")
 # load intersection vertex
-vtx_intersection = np.load('/Users/arqfa/OneDrive/Desktop/Research/vtx_intersection.npy')
+vtx_intersection = np.load(blend_file_path + 'vtx_intersection.npy')
 print("Intersection data loaded")
 # load level z location for volume calculations
-z_level = np.load('/Users/arqfa/OneDrive/Desktop/Research/z_level.npy')
+z_level = np.load(blend_file_path + 'z_level.npy')
 print("Required level of platform loaded")
 print(z_level)
 z_coord_intersection = z_coordinate_extraction(vtx_intersection)

@@ -17,7 +17,7 @@ from os import system
 def site_analysis(grid_size, full_site, land_extents_for_analysis, building_for_analysis, level_for_implantation,
                   blender_path):
     # determine the variables from the inputs
-    path = blender_path
+
     d = grid_size
     site = bpy.data.objects.get(full_site)  # the full site chosen for analysis and intersection
     land = bpy.data.objects.get(
@@ -68,7 +68,7 @@ def site_analysis(grid_size, full_site, land_extents_for_analysis, building_for_
         vtx_id = len(vtx)
         top_grid_vtx = np.array_split(vtx_position, vtx_id)
         # np.save('/Users/arqfa/OneDrive/Desktop/Research/top_grid_vtx', top_grid_vtx)
-        np.save(path + 'top_grid_vtx', top_grid_vtx)
+        np.save(blender_path + 'top_grid_vtx', top_grid_vtx)
         print("ray origins for intersection exported as 'top_grid_vtx'")
 
         # Delete "top_grid_of_analysis" since it won't be used anymore
@@ -85,8 +85,7 @@ def site_analysis(grid_size, full_site, land_extents_for_analysis, building_for_
     if level != None:
         z_level = float(level.location.z)
         print(z_level)
-        # np.save('/Users/arqfa/OneDrive/Desktop/Research/z_level', z_level)  # This file can be deleted once the data has been joined
-        np.save(path + 'z_level',
+        np.save(blender_path + 'z_level',
                 z_level)  # This file can be deleted once the data has been joined
     else:
         print("level location '" + str(level_for_implantation) + "' not found")
@@ -142,8 +141,9 @@ def site_analysis(grid_size, full_site, land_extents_for_analysis, building_for_
                                  use_snap_nonedit=True, use_snap_selectable=False)
 
         # export the rotated mesh to same data
-        blend_file_path = bpy.data.filepath
-        directory = os.path.dirname(blend_file_path)
+        # blend_file_path = bpy.data.filepath
+        # directory = os.path.dirname(blend_file_path)
+        directory = os.path.dirname(blender_path)
         target_file = os.path.join(directory, 'terrain.glb')
         bpy.ops.export_scene.gltf(filepath=target_file, check_existing=True, export_format='GLB', use_selection=True)
         print("terrain mesh exported successfully as 'terrain.glb' for the site: " + str(full_site))
