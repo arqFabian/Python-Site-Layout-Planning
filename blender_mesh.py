@@ -15,7 +15,7 @@ from os import system
 
 # start of process def export():
 def site_analysis(grid_size, full_site, land_extents_for_analysis, building_for_analysis, level_for_implantation,
-                  blender_path):
+                  blender_file_path, python_file_path):
     # determine the variables from the inputs
 
     d = grid_size
@@ -68,7 +68,7 @@ def site_analysis(grid_size, full_site, land_extents_for_analysis, building_for_
         vtx_id = len(vtx)
         top_grid_vtx = np.array_split(vtx_position, vtx_id)
         # np.save('/Users/arqfa/OneDrive/Desktop/Research/top_grid_vtx', top_grid_vtx)
-        np.save(blender_path + 'top_grid_vtx', top_grid_vtx)
+        np.save(blender_file_path + 'top_grid_vtx', top_grid_vtx)
         print("ray origins for intersection exported as 'top_grid_vtx'")
 
         # Delete "top_grid_of_analysis" since it won't be used anymore
@@ -85,7 +85,7 @@ def site_analysis(grid_size, full_site, land_extents_for_analysis, building_for_
     if level != None:
         z_level = float(level.location.z)
         print(z_level)
-        np.save(blender_path + 'z_level',
+        np.save(blender_file_path + 'z_level',
                 z_level)  # This file can be deleted once the data has been joined
     else:
         print("level location '" + str(level_for_implantation) + "' not found")
@@ -143,7 +143,7 @@ def site_analysis(grid_size, full_site, land_extents_for_analysis, building_for_
         # export the rotated mesh to same data
         # blend_file_path = bpy.data.filepath
         # directory = os.path.dirname(blend_file_path)
-        directory = os.path.dirname(blender_path)
+        directory = os.path.dirname(blender_file_path)
         target_file = os.path.join(directory, 'terrain.glb')
         bpy.ops.export_scene.gltf(filepath=target_file, check_existing=True, export_format='GLB', use_selection=True)
         print("terrain mesh exported successfully as 'terrain.glb' for the site: " + str(full_site))
@@ -157,13 +157,13 @@ def site_analysis(grid_size, full_site, land_extents_for_analysis, building_for_
     # trimesh to launch rays from the grid vertex and determines the intersection with the site.
 
     command = ['/Users/arqfa/PycharmProjects/pythonProject/venv/Scripts/python',
-               '/Users/arqfa/PycharmProjects/site_layout/mesh_intersection.py']
+               python_file_path + 'mesh_intersection.py']
     print(f'Running \"{" ".join(command)}\"')
     subprocess.call(command, shell=True)
     # load trimesh intersection lists.
     # the vertexes of the intersection are on the list "vtx_intersection.npy" that comes straight from the uploaded file
     try:
-        vtx_intersection = np.load('/Users/arqfa/OneDrive/Desktop/Research/vtx_intersection.npy')
+        vtx_intersection = np.load(blender_file_path + 'vtx_intersection.npy')
         print("Intersection data loaded back into blender")
     except:
         print("Error loading vtx_intersection.npy")
@@ -181,7 +181,7 @@ def site_analysis(grid_size, full_site, land_extents_for_analysis, building_for_
     mesh.from_pydata(vtx_intersection, [], faces)
     obj = bpy.data.objects.new("mesh_intersection", mesh)
     bpy.context.scene.collection.objects.link(obj)
-    print("!!!!Visualization of intersection mesh completed as 'mesh intersection' for the site: " + str(full_site))
+    print("modification check!!!!Visualization of intersection mesh completed as 'mesh intersection' for the site: " + str(full_site))
 
     return d, dx_rows, dy_cols, bx_rows, by_cols, bz_height
     # return {'dx': dx_rows, 'dy': dy_cols, 'bx': bx_rows}#d, dx_rows, dy_cols, bx_rows, by_cols, bz_height

@@ -26,8 +26,8 @@ if __name__ == '__main__':
 # defining the paths for the project
 
 # path of the blender file we are using.
-blend_file_path = bpy.path.abspath("//")  # This will update when using on different blender files.
-print (blend_file_path)
+blender_file_path = bpy.path.abspath("//")  # This will update when using on different blender files.
+print (blender_file_path)
 # path to the site_layout app directory.
 slp_app_path = 'C:/Users/arqfa/PycharmProjects/site_layout'
 sys.path.append(slp_app_path)
@@ -46,7 +46,7 @@ level = "level_location"
 site_trees = [0, 1, 0.5, 0, 0.25] * 500  # Dummy list for trees can be deleted once the tree detection module  have
 # been calculated
 
-d, dx_rows, dy_cols, bx_rows, by_cols, bz_height = site_analysis(d, site, land, building, level, blend_file_path)
+d, dx_rows, dy_cols, bx_rows, by_cols, bz_height = site_analysis(d, site, land, building, level, blender_file_path)
 # print(d, dx_rows, dy_cols, bx_rows, by_cols, bz_height)
 print("the site and building variables have been calculated")
 
@@ -54,13 +54,13 @@ print("the site and building variables have been calculated")
 
 from Volume_calculation import z_coordinate_extraction, volume_formula
 
-vtx_origin = np.load(blend_file_path + 'top_grid_vtx.npy')
+vtx_origin = np.load(blender_file_path + 'top_grid_vtx.npy')
 print("origin vertex loaded")
 # load intersection vertex
-vtx_intersection = np.load(blend_file_path + 'vtx_intersection.npy')
+vtx_intersection = np.load(blender_file_path + 'vtx_intersection.npy')
 print("Intersection data loaded")
 # load level z location for volume calculations
-z_level = np.load(blend_file_path + 'z_level.npy')
+z_level = np.load(blender_file_path + 'z_level.npy')
 print("Required level of platform loaded")
 print(z_level)
 z_coord_intersection = z_coordinate_extraction(vtx_intersection)
