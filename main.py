@@ -18,6 +18,7 @@ from scipy.optimize import minimize
 from mpl_toolkits import mplot3d
 from mpl_toolkits.mplot3d import Axes3D
 
+
 #constants
 D = 1
 sites = ["T1-West2", "Landscape_002.002"]
@@ -35,6 +36,13 @@ sys.path.append(SLP_APP_PATH)
 # been calculated
 site_trees = [0, 1, 0.5, 0, 0.25] * 500
 
+#cleaning the console for a fresh start on the execution
+
+cls = lambda: system('cls')
+
+cls() #this function call will clear the console
+
+
 def print_hi(name):
     # Use a breakpoint in the code line below to debug your script.
     print(f'{name}')  # Press Ctrl+F8 to toggle the breakpoint.
@@ -44,18 +52,13 @@ def print_hi(name):
 if __name__ == '__main__':
     print_hi('Site Layout Planning Optimization')
 
+print ("!!!!" + SITE)
 # defining the paths for the project
 
 # path of the blender file we are using.
 blender_file_path = bpy.path.abspath("//")  # This will update when using on different blender files.
 print (blender_file_path)
 
-
-#cleaning the console for a fresh start on the execution
-
-cls = lambda: system('cls')
-
-cls() #this function call will clear the console
 
 # importing the blender_mesh module for measuring and intersection
 
