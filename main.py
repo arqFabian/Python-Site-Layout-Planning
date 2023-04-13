@@ -13,6 +13,7 @@ import numpy as np
 import subprocess
 import matplotlib.pyplot as plt
 import trimesh
+import rtree
 from os import system
 from scipy.optimize import minimize
 from mpl_toolkits import mplot3d
@@ -21,12 +22,21 @@ from mpl_toolkits.mplot3d import Axes3D
 
 #constants
 D = 1
-sites = ["T1-West2", "Landscape_002.002"]
-SITE = str(sites[1]) #"T1-West2"  # "Landscape_002"
-LAND = "AreaSelection8x4"
-BUILDING = "building4x4"
-#building_name = "building4x4"
-LEVEL = "level_location"
+sites = ["T0-West2","test-site-1", "test-site-2", "test-site-3", "T4-Lake"] # list of the sites, in this form since we are manipulating several terrains from a single file
+SITE = str(sites[1]) # the number represents the chosen name from the list "sites"
+LAND = "AreaSelection8x4" # name of the chosen land mesh reprensenting the area inside the site to be used.
+                        # The LAND should be decided based on legislation and area of interest but for now it must be a rectangular shape
+BUILDING = "building4x4" # name of the building mesh for wich we are calculating
+LEVEL = "level_location" #name of the plane_mesh located at the desired level of implantation of building
+
+K_FACTOR = 10 # Penalization value "k" applied during the activation formula
+T0_INFLECTION_VALUE = 0.5 # inflection value "t0" applied during the activation formula. It must be from 0 to 1
+
+WEIGHTS = [0.5, 0.3, 0.2]
+# weights applied to each function (f1,f2,f3) respectively. They should add up to 1 because of the normalization.
+# This values determined how we rank the different functions for deciding the final score.
+# They are applied to the activated values (after using sigmoid function)
+NUMBER_SOLUTIONS_TO_PLOT = 5
 
 #paths
 SLP_APP_PATH = 'C:/Users/arqfa/PycharmProjects/site_layout' # path to the site_layout app directory.
@@ -63,8 +73,6 @@ print (blender_file_path)
 # importing the blender_mesh module for measuring and intersection
 
 from blender_mesh import site_analysis
-
-
 
 
 D, dx_rows, dy_cols, bx_rows, by_cols, bz_height, z_level, top_grid_vtx, vtx_intersection = site_analysis(D, SITE, LAND, BUILDING, LEVEL, blender_file_path, SLP_APP_PATH)
@@ -105,21 +113,19 @@ f3_deforestation_value = f3_deforestation_function(available_positions, site_tre
 
 print("fitness functions calculated successfully for " + str(len(available_positions)) + " values")
 # Activation Function + final normalization
-k_factor = 10
-t0_point_value = 0.5
 
-activated_f1 = activation_function(f1_earthwork_vol, k_factor, t0_point_value)
-activated_f2 = activation_function(f2_earthwork_costs, k_factor, t0_point_value)
-activated_f3 = activation_function(f3_deforestation_value, k_factor, t0_point_value)
+
+activated_f1 = activation_function(f1_earthwork_vol, K_FACTOR, T0_INFLECTION_VALUE)
+activated_f2 = activation_function(f2_earthwork_costs, K_FACTOR, T0_INFLECTION_VALUE)
+activated_f3 = activation_function(f3_deforestation_value, K_FACTOR, T0_INFLECTION_VALUE)
 
 activated_values = list(zip(activated_f1, activated_f2, activated_f3))
 print("activated fitness functions calculated successfully for " + str(len(activated_f1)) + " values")
 
 
 # optimization and sorting of solutions
-weights = [0.5, 0.3, 0.2]
-n_solutions = 5
-score_values_sorted, score_values = temp_optimization_sorting(n_solutions, activated_values, available_positions,weights)
+
+score_values_sorted, score_values = temp_optimization_sorting(NUMBER_SOLUTIONS_TO_PLOT, activated_values, available_positions, WEIGHTS)
 print("candidates sorted")
 if score_values is not None:
     np.save(blender_file_path + '/score_values',

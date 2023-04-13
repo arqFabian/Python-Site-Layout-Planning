@@ -69,7 +69,7 @@ fig.show()"""
 
 number_solutions = 5
 
-#slp_plot = radar_plot(score_values_sorted, number_solutions)
+slp_plot = radar_plot(score_values_sorted, number_solutions)
 
 
 
@@ -185,7 +185,7 @@ def scatter_graph_3D_4(sorted_values_input, number_of_plotted_solutions):
 
     plt.show()
 
-def scatter_graph_3D(sorted_values_input, number_of_plotted_solutions):
+def scatter_graph_3D_5(sorted_values_input, number_of_plotted_solutions):
     n = number_of_plotted_solutions
     position_id, scores, f1, f2, f3 = list(zip(*sorted_values_input))
     categories = ['f1 Earthwork values', 'f2 earthwork costs', 'f3 deforestation values']
@@ -206,7 +206,8 @@ def scatter_graph_3D(sorted_values_input, number_of_plotted_solutions):
     ax.set_zlabel(categories[2])
 
     # Transpose the table data so that each list is a column
-    table_data = list(zip(position_id, f1, f2, f3))
+    table_data = list(zip(position_id[:n], f1[:n], f2[:n], f3[:n]))
+
 
     # Add table
     col_labels = ['Position', categories[0], categories[1], categories[2]]
@@ -219,7 +220,40 @@ def scatter_graph_3D(sorted_values_input, number_of_plotted_solutions):
 
     plt.show()
 
-scatter_plot = scatter_graph_3D(score_values_sorted,number_solutions)
+def scatter_graph_3D(sorted_values_input, number_of_plotted_solutions):
+    n = number_of_plotted_solutions
+    position_id, scores, f1, f2, f3 = list(zip(*sorted_values_input))
+    categories = ['f1 Earthwork values', 'f2 earthwork costs', 'f3 deforestation values']
 
-scatter_plot = scatter_graph_3D(score_values_sorted,number_solutions)
+    # Assuming you have three lists of values representing the Pareto front for each fitness function
+    x = f1[:n]
+    y = f2[:n]
+    z = f3[:n]
+
+    fig = plt.figure(figsize=(10, 6))  # Adjust figure size here
+    ax = fig.add_subplot(projection='3d')
+
+    ax.scatter(x, y, z)
+
+    # Add labels for the axes
+    ax.set_xlabel(categories[0])
+    ax.set_ylabel(categories[1])
+    ax.set_zlabel(categories[2])
+
+    # Transpose the table data so that each list is a column
+    table_data = list(zip(position_id[:n], f1[:n], f2[:n], f3[:n]))
+
+    # Add table
+    col_labels = ['Position', categories[0], categories[1], categories[2]]
+    table = ax.table(cellText=table_data, colLabels=col_labels, loc='bottom')
+
+    # Adjust table properties
+    table.auto_set_font_size(False)
+    table.set_fontsize(8)
+    table.scale(1, 1.5)
+
+    plt.show()
+
+scatter_plot = scatter_graph_3D(score_values_sorted, number_solutions)
+
 

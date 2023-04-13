@@ -10,6 +10,8 @@ The scripts works outside the frame of blender.
 
 import trimesh
 import numpy as np
+import rtree
+
 
 if __name__ == '__main__':
 

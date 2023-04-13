@@ -155,7 +155,7 @@ def site_analysis(grid_size, full_site, land_extents_for_analysis, building_for_
     # to calculate the intersection between the GRID and the terrain, run the file mesh_intersection.py that uses
     # trimesh to launch rays from the grid vertex and determines the intersection with the site.
 
-    command = [slp_app_file_path + '/venv/Scripts/python',
+    """command = [slp_app_file_path + '/venv/Scripts/python',
                slp_app_file_path + '/mesh_intersection.py']
     print(f'Running \"{" ".join(command)}\"')
     subprocess.call(command, shell=True)
@@ -168,7 +168,10 @@ def site_analysis(grid_size, full_site, land_extents_for_analysis, building_for_
         print("Error loading vtx_intersection.npy")
 
         # exit function if there was an error loading the file
-        return
+        return"""
+    from mesh_intersection import intersection_trimesh
+    print("!!!!!!!!!!! function intersection working")
+    vtx_intersection = intersection_trimesh(top_grid_vtx, blender_file_path)
 
     # continue with the rest of the code to visualize the intersection mesh
     faces = []
