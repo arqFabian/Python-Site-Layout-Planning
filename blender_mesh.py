@@ -162,7 +162,7 @@ def site_analysis(grid_size, full_site, land_extents_for_analysis, building_for_
     # load trimesh intersection lists.
     # the vertexes of the intersection are on the list "vtx_intersection.npy" that comes straight from the uploaded file
     try:
-        vtx_intersection = np.load(blender_file_path + 'vtx_intersection.npy')
+        vtx_intersection = np.load(slp_app_file_path + '/mesh_intersection.npy')
         print("Intersection data loaded back into blender")
     except:
         print("Error loading vtx_intersection.npy")

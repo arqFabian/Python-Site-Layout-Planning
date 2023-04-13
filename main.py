@@ -12,11 +12,28 @@ import math
 import numpy as np
 import subprocess
 import matplotlib.pyplot as plt
+import trimesh
 from os import system
 from scipy.optimize import minimize
 from mpl_toolkits import mplot3d
 from mpl_toolkits.mplot3d import Axes3D
 
+#constants
+D = 1
+sites = ["T1-West2", "Landscape_002.002"]
+SITE = str(sites[1]) #"T1-West2"  # "Landscape_002"
+LAND = "AreaSelection8x4"
+BUILDING = "building4x4"
+#building_name = "building4x4"
+LEVEL = "level_location"
+
+#paths
+SLP_APP_PATH = 'C:/Users/arqfa/PycharmProjects/site_layout' # path to the site_layout app directory.
+sys.path.append(SLP_APP_PATH)
+
+# Dummy list for trees can be deleted once the tree detection module  have
+# been calculated
+site_trees = [0, 1, 0.5, 0, 0.25] * 500
 
 def print_hi(name):
     # Use a breakpoint in the code line below to debug your script.
@@ -32,9 +49,7 @@ if __name__ == '__main__':
 # path of the blender file we are using.
 blender_file_path = bpy.path.abspath("//")  # This will update when using on different blender files.
 print (blender_file_path)
-# path to the site_layout app directory.
-slp_app_path = 'C:/Users/arqfa/PycharmProjects/site_layout'
-sys.path.append(slp_app_path)
+
 
 #cleaning the console for a fresh start on the execution
 
@@ -46,22 +61,16 @@ cls() #this function call will clear the console
 
 from blender_mesh import site_analysis
 
-building_name = "building4x4"
-d = 1
-site = "T1-West2"  # "Landscape_002"
-land = "AreaSelection8x4"
-building = "building4x4"
-level = "level_location"
-site_trees = [0, 1, 0.5, 0, 0.25] * 500  # Dummy list for trees can be deleted once the tree detection module  have
-# been calculated
 
-d, dx_rows, dy_cols, bx_rows, by_cols, bz_height, z_level, top_grid_vtx, vtx_intersection = site_analysis(d, site, land, building, level, blender_file_path, slp_app_path)
+
+
+D, dx_rows, dy_cols, bx_rows, by_cols, bz_height, z_level, top_grid_vtx, vtx_intersection = site_analysis(D, SITE, LAND, BUILDING, LEVEL, blender_file_path, SLP_APP_PATH)
 # print(d, dx_rows, dy_cols, bx_rows, by_cols, bz_height)
 print("the site and building variables have been calculated")
 
 # Volume calculation module
 
-from Volume_calculation import z_coordinate_extraction, volume_formula
+from volume_calculation import z_coordinate_extraction, volume_formula
 
 z_coord_intersection = z_coordinate_extraction(vtx_intersection)
 z_coord_land = z_coordinate_extraction(top_grid_vtx)
@@ -69,7 +78,7 @@ z_coord_land = z_coordinate_extraction(top_grid_vtx)
 # print(str(len(z_coord_intersection)) + str(z_coord_intersection[0:5]))
 # print(str(len(z_coord_land)) + str(z_coord_land[0:5]))
 
-site_volumes = volume_formula(dx_rows, dy_cols, d, z_coord_intersection, z_level)
+site_volumes = volume_formula(dx_rows, dy_cols, D, z_coord_intersection, z_level)
 
 print("##############")
 print("The volumes per segment of grid have been calculated. There are " + str(len(site_volumes)))
@@ -106,13 +115,16 @@ print("activated fitness functions calculated successfully for " + str(len(activ
 
 # optimization and sorting of solutions
 weights = [0.5, 0.3, 0.2]
-n_solutions = 2
+n_solutions = 5
 score_values_sorted, score_values = temp_optimization_sorting(n_solutions, activated_values, available_positions,weights)
 print("candidates sorted")
+if score_values is not None:
+    np.save(blender_file_path + '/score_values',
+            score_values)  # This file can be deleted once the data has been joined
+    print("score values successfully saved")
+    np.save(blender_file_path + '/score_values_sorted',
+            score_values_sorted)  # This file can be deleted once the data has been joined
+    print("sorted score values successfully saved")
 
-np.save(blender_file_path + '/score_values',
-        score_values)  # This file can be deleted once the data has been joined
-print("score values successfully saved")
-np.save(blender_file_path + '/score_values_sorted',
-        score_values_sorted)  # This file can be deleted once the data has been joined
-print("sorted score values successfully saved")
+else:
+    print('score values not saved')
