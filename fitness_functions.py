@@ -21,9 +21,17 @@ print("origin vertex loaded")
 site_volumes = np.load(blender_file_path + '/site_volumes.npy')
 
 site_information = np.load(blender_file_path + '/site_information.npy')
-D, dx_rows, dy_cols, bx_rows, by_cols, bz_height, z_level = site_information
+#D, dx_rows, dy_cols, bx_rows, by_cols, bz_height, z_level = site_information
 
-#print(dx_rows)
+D = int(site_information[0])
+dx_rows = int(site_information[1])
+dy_cols = int(site_information[2])
+bx_rows = int(site_information[3])
+by_cols = int(site_information[4])
+bz_height = int(site_information[5])
+z_level = int(site_information[6])
+
+#print(site_information[5])
 
 #breakpoint()
 
@@ -55,6 +63,8 @@ def available_positions_function(list_of_vertex, distance_x, distance_y, buildin
 
 available_positions = available_positions_function(vtx_origin, dx_rows, dy_cols, bx_rows, by_cols)
 print("there are " + str(len(available_positions)) + " available positions on the grid")
+
+#breakpoint()
 
 """
 Dummy lists
