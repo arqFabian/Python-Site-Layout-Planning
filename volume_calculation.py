@@ -1,29 +1,17 @@
 import numpy as np
 
-"""# load original grid vertex
-vtx_origin = np.load('/Users/arqfa/OneDrive/Desktop/Research/origin.npy')
-print("origin vertex loaded")
-print(vtx_origin[0:6])
-# load intersection vertex
-vtx_intersection = np.load('/Users/arqfa/OneDrive/Desktop/Research/intersection.npy')
-print("Intersection data loaded")
-print(vtx_intersection[0:6])
-# load level z location for volume calculations
-z_level = np.load('/Users/arqfa/OneDrive/Desktop/Research/z_level.npy')
-print("Intersection data loaded")
-print(z_level)"""
 
 D = 1
 dx_rows = 20
 dy_cols = 20
-
-vtx_origin = np.load('/Users/arqfa/OneDrive/Desktop/Research/top_grid_vtx.npy')
+blender_file_path = "/Users/arqfa/OneDrive/Desktop/Research"
+vtx_origin = np.load(blender_file_path + '/top_grid_vtx.npy')
 print("origin vertex loaded")
 # load intersection vertex
-vtx_intersection = np.load('/Users/arqfa/OneDrive/Desktop/Research/vtx_intersection.npy')
+vtx_intersection = np.load(blender_file_path + '/vtx_intersection.npy')
 print("Intersection data loaded")
 # load level z location for volume calculations
-z_level = np.load('/Users/arqfa/OneDrive/Desktop/Research/z_level.npy')
+z_level = np.load(blender_file_path + '/z_level.npy')
 print("Intersection data loaded")
 print(z_level)
 

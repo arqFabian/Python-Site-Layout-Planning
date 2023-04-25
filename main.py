@@ -18,6 +18,7 @@ from os import system
 from scipy.optimize import minimize
 from mpl_toolkits import mplot3d
 from mpl_toolkits.mplot3d import Axes3D
+import plotly.graph_objects as go
 
 
 #constants
@@ -137,3 +138,9 @@ if score_values is not None:
 
 else:
     print('score values not saved')
+
+#plotting graph
+
+#from plot_radar import radar_plot, scatter_graph_3D
+
+#scatter_plot = scatter_graph_3D(score_values_sorted, NUMBER_SOLUTIONS_TO_PLOT)

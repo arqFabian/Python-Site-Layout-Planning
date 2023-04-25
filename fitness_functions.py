@@ -1,17 +1,35 @@
 import math
 import numpy as np
 
-# verts = np.load('/Users/arqfa/OneDrive/Desktop/Research/site_volumes.npy')
-verts = list(range(500))  # Dummy list to test the tracking of avalibale positions.
-# verts = list(string.ascii_lowercase)
-# print (verts)
 
-dx_rows = 20
+"""dx_rows = 20
 dy_cols = 20
 bx_rows = 4
 by_cols = 4
-D = 1  # module size
+D = 1  # module size"""
+K_FACTOR = 10 # Penalization value "k" applied during the activation formula
+T0_INFLECTION_VALUE = 0.5 # inflection value "t0" applied during the activation formula. It must be from 0 to 1
+
+WEIGHTS = [0.5, 0.3, 0.2]
+NUMBER_SOLUTIONS_TO_PLOT = 2
+
 blender_file_path = "/Users/arqfa/OneDrive/Desktop/Research"
+
+vtx_origin = np.load(blender_file_path + '/top_grid_vtx.npy')
+print("origin vertex loaded")
+
+site_volumes = np.load(blender_file_path + '/site_volumes.npy')
+
+site_information = np.load(blender_file_path + '/site_information.npy')
+D, dx_rows, dy_cols, bx_rows, by_cols, bz_height, z_level = zip(*site_information)
+
+# volumes =list(range(-10,200)) #substitute this volume list for the actual calculations
+# volumes = [-1]*8+[2]*8+[-3]*8+[-4]*8
+site_trees = [0, 1, 0.5, 0, 0.25] * 100
+print("there are " + str(len(site_volumes)) + " independent volumes on the grid of the site")
+# print (volumes)
+
+print(site_volumes)
 
 def available_positions_function(list_of_vertex, distance_x, distance_y, building_x, building_y):
     # verts = list_of_vertex
@@ -31,8 +49,6 @@ def available_positions_function(list_of_vertex, distance_x, distance_y, buildin
     return available_positions_on_site
 
 
-vtx_origin = np.load(blender_file_path + '/top_grid_vtx.npy')
-print("origin vertex loaded")
 available_positions = available_positions_function(vtx_origin, dx_rows, dy_cols, bx_rows, by_cols)
 print("there are " + str(len(available_positions)) + " available positions on the grid")
 
@@ -42,16 +58,8 @@ This lists need to be replaced with their equivalent from the actual data.
 Specifically "Volumes" and "Trees"
 """
 
-site_volumes = np.load(blender_file_path + '/site_volumes.npy')
-# volumes =list(range(-10,200)) #substitute this volume list for the actual calculations
-# volumes = [-1]*8+[2]*8+[-3]*8+[-4]*8
-site_trees = [0, 1, 0.5, 0, 0.25] * 100
-print("there are " + str(len(site_volumes)) + " independent volumes on the grid of the site")
-# print (volumes)
 
-""""""
 # fitness functions
-""""""
 
 
 # f1 - Earthwork volumes calculations function
@@ -59,6 +67,7 @@ def f1_earthwork_vol_function(available_position_list, volume_list):
     positions = available_position_list
     volume = volume_list
     f1 = []
+    ##f1_2 = []
 
     for i in range(len(positions)):  # determine the number of available position to calculate f1
         j_max = (by_cols / D)
@@ -75,11 +84,19 @@ def f1_earthwork_vol_function(available_position_list, volume_list):
 
         # Formula to sum the partials representing the sum of the values per row under the building projection
         vol_sum = abs(math.fsum(partials_f1[0:int(j_max)]))
-        # vol_sum = math.fsum(partials_f1[0:int(j_max)])
+        ##vol_sum2 = math.fsum(partials_f1[0:int(j_max)])
+
+
+
         rounded_vol_sum = round(vol_sum, 3)
+        ##rounded_vol_sum2 = round(vol_sum2,3)
 
         # Creation of the lists with the values per position for the fitness function prior to the normalization
         f1.append(rounded_vol_sum)
+        ##f1_2.append(rounded_vol_sum2)
+
+    ##print(f1)
+    ##print(f1_2)
 
     return f1
 
@@ -89,7 +106,8 @@ f1_earthwork_vol = f1_earthwork_vol_function(available_positions, site_volumes)
 
 # print("These are the results for the " + (str(len(f1_earthwork_vol))) + " possible positions")
 # print("For f1-earthwork volumes (m3): ")
-# print(f1_earthwork_vol)
+# print(f1_earthwork_vol[:5])
+
 
 # f2 - Earthwork costs calculations
 
@@ -120,16 +138,16 @@ def f2_earthwork_costs_function(available_position_list, volume_list):
 
         # Creation of the lists with the values per position for the fitness function prior to the normalization
         f2.append(rounded_costs_sum)
-    # print(f2_earthwork_costs)
+
+    ## print("These are the results for the " + (str(len(available_positions))) + " possible positions")
+    ## print("For f2-earthwork costs: ")
+    ## print(f2_earthwork_costs)
+
     return f2
 
 
 f2_earthwork_costs = f2_earthwork_costs_function(available_positions, site_volumes)
 
-
-# print("These are the results for the " + (str(len(available_positions))) + " possible positions")
-# print("For f2-earthwork costs: ")
-# print(f2_earthwork_costs)
 
 # f3 - Deforestation Value calculations
 
@@ -158,16 +176,15 @@ def f3_deforestation_function(available_position_list, tree_list):
         # Creation of the lists with the values per position for the fitness function prior to the normalization
         f3.append(tree_sum)
 
+    # print("These are the results for the " + (str(len(available_positions))) + " possible positions")
+    # print("For f3-deforestation value: ")
     # print(f3_deforestation_value)
+
     return f3
 
 
 f3_deforestation_value = f3_deforestation_function(available_positions, site_trees)
 
-
-# print("These are the results for the " + (str(len(available_positions))) + " possible positions")
-# print("For f3-deforestation value: ")
-# print(f3_deforestation_value)
 
 # Normalization of the results. This function was incorporated as part of the activation function
 
@@ -176,6 +193,7 @@ def normalization_of_functions(input_list):
     list_max = max(n_list)
     print("max original " + str(max(n_list)))
     list_min = 0  # optimizing for zero
+    #list_min = min(n_list) # optimizing for the lowest value
     normalized_result = []
     for value in n_list:
         normalization = (list_max - value) / (list_max - list_min)
@@ -188,14 +206,6 @@ def normalization_of_functions(input_list):
 f1_normalized = normalization_of_functions(f1_earthwork_vol)
 f2_normalized = normalization_of_functions(f2_earthwork_costs)
 f3_normalized = normalization_of_functions(f3_deforestation_value)
-
-"""print("The following are the scores for the " + (str(len(f1_earthwork_vol))) + " possible positions.")
-print("For the normalized f1-earthwork volumes: ")
-print(f1_normalized)
-print("For the normalized f2-earthwork costs: ")
-print(f2_normalized)
-print("For the normalized f3-deforestation values: ")
-print(f3_normalized)"""
 
 # Activation Function + final normalization
 
@@ -212,6 +222,7 @@ def activation_function(input_list, k_penalization_factor, t0_inflection_point):
     # Once again normalization of activated list because of numerical shift due to k and t0 values.
     min_list = min(activated_list)
     max_list = 1  # This value is the ideal scenario
+    #max_list = max(activated_list) #the highest value becomes the ideal scenario
     normalized_activated_list = [(value - min_list) / (max_list - min_list) for value in activated_list]
     normalized_activated_list = [round(value, 3) for value in normalized_activated_list]
     print("max activated " + str(max(normalized_activated_list)))
@@ -219,25 +230,11 @@ def activation_function(input_list, k_penalization_factor, t0_inflection_point):
 
 
 # Activation for normalized n1_normalized_f1
-k_factor = 10
-t0_point_value = 0.5
 
-activated_f1 = activation_function(f1_earthwork_vol, k_factor, t0_point_value)
-activated_f2 = activation_function(f2_earthwork_costs, k_factor, t0_point_value)
-activated_f3 = activation_function(f3_deforestation_value, k_factor, t0_point_value)
 
-"""print("The following are the scores  after applying the activation function for the " + (
-    str(len(available_positions))) + " possible positions.")
-print("For f1-earthwork volumes: ")
-print(activated_f1)
-print("For f2-earthwork scores: ")
-print(activated_f2)
-print("For f3-deforestation values: ")
-print(activated_f3)
-
-print(max(activated_f1))
-print(max(activated_f2))
-print(max(activated_f3))"""
+activated_f1 = activation_function(f1_earthwork_vol, K_FACTOR, T0_INFLECTION_VALUE)
+activated_f2 = activation_function(f2_earthwork_costs, K_FACTOR, T0_INFLECTION_VALUE)
+activated_f3 = activation_function(f3_deforestation_value, K_FACTOR, T0_INFLECTION_VALUE)
 
 
 # Selection of top three recommendations
@@ -253,25 +250,6 @@ activated_values = list(zip(activated_f1, activated_f2, activated_f3))
 
 # Review the combination of scores
 
-"""def temp_optimization_sorting(number_of_solutions, activated_values_list, available_positions_list, weights_input):
-    optimization_list = []
-    for i in range(len(activated_values_list)):
-        j = activated_values_list[i]
-        weighted_list = j[0]*weights[0] + j[1]*weights_input[1] + j[2]*weights_input[2]
-        weighted_list_rounded = weighted_list.__round__(3)
-        optimization_list.append(weighted_list_rounded)
-
-    score_values = create_nested_list(available_positions_list, optimization_list)
-    print('score_values calculated')
-    score_values.sort(key=lambda x: x[1], reverse=True)
-    print(score_values)
-    for i in range (int(number_of_solutions)):
-        print(f"Candidate {i + 1}:")
-        candidate = score_values[i]
-        print("Position: ", candidate[0])
-        print("Score: ", candidate[1])
-
-    return score_values"""
 
 def temp_optimization_sorting(number_of_solutions, activated_values_list, available_positions_list, weights_input):
 
@@ -294,9 +272,7 @@ def temp_optimization_sorting(number_of_solutions, activated_values_list, availa
     return scores_sorted, scores
 
 
-weights = [0.5, 0.3, 0.2]
-n_solutions = 2
-score_values_sorted, score_values = temp_optimization_sorting(n_solutions, activated_values, available_positions,weights)
+score_values_sorted, score_values = temp_optimization_sorting(NUMBER_SOLUTIONS_TO_PLOT, activated_values, available_positions, WEIGHTS)
 print("candidates sorted")
 
 np.save(blender_file_path + '/score_values',
@@ -308,34 +284,5 @@ print("sorted score values successfully saved")
 
 #table_list = create_nested_list(score_values_list, activated_f1, activated_f2, activated_f3)
 #print(table_list[2])
-"""l = []
-for i in range(len(activated_values)):
-    j = activated_values[i]
-    k = math.fsum(j)
-    l.append(k)
 
-scores_position = create_nested_list(available_positions, l, f1_earthwork_vol, f2_earthwork_costs,
-                                     f3_deforestation_value)
 
-print("######################################")
-print(
-    "List with all the original values per position is as follows with the first value being the vertex id, followed by the results of f1, f2, f3 respectively:")
-print(original_values)
-print("######################################")
-print(
-    "List with all the normalized values per position is as follows with the first value being the vertex id, followed by the normalized activation of f1, f2, f3 respectively:")
-print(activated_values)
-print("######################################")
-print(scores_position)
-print("######################################")
-# print(scores)
-
-np.save('/Users/arqfa/OneDrive/Desktop/Research/normalized_values',
-        activated_values)  # This file can be deleted once the data has been joined
-print("normalized values successfully saved")
-np.save('/Users/arqfa/OneDrive/Desktop/Research/available_positions',
-        available_positions)  # This file can be deleted once the data has been joined
-print("available positions values successfully saved")
-np.save('/Users/arqfa/OneDrive/Desktop/Research/scores_positions',
-        scores_position)  # This file can be deleted once the data has been joined
-print("available positions values successfully saved")"""

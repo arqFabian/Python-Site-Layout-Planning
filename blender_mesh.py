@@ -155,20 +155,6 @@ def site_analysis(grid_size, full_site, land_extents_for_analysis, building_for_
     # to calculate the intersection between the GRID and the terrain, run the file mesh_intersection.py that uses
     # trimesh to launch rays from the grid vertex and determines the intersection with the site.
 
-    """command = [slp_app_file_path + '/venv/Scripts/python',
-               slp_app_file_path + '/mesh_intersection.py']
-    print(f'Running \"{" ".join(command)}\"')
-    subprocess.call(command, shell=True)
-    # load trimesh intersection lists.
-    # the vertexes of the intersection are on the list "vtx_intersection.npy" that comes straight from the uploaded file
-    try:
-        vtx_intersection = np.load(blender_file_path + 'vtx_intersection.npy')
-        print("Intersection data loaded back into blender")
-    except:
-        print("Error loading vtx_intersection.npy")
-
-        # exit function if there was an error loading the file
-        return"""
     from mesh_intersection import intersection_trimesh
     print("!!!!!!!!!!! function intersection working")
     vtx_intersection = intersection_trimesh(top_grid_vtx, blender_file_path)
@@ -185,4 +171,8 @@ def site_analysis(grid_size, full_site, land_extents_for_analysis, building_for_
     bpy.context.scene.collection.objects.link(obj)
     print('Visualization of intersection mesh completed as "mesh_intersection" for the site: ' + str(full_site))
 
+    site_information = list(zip(d, dx_rows, dy_cols, bx_rows, by_cols, bz_height, z_level))
+    np.save(blender_file_path + '/site_information', site_information)  # file containing all variables
+
+    print("score values successfully saved")
     return d, dx_rows, dy_cols, bx_rows, by_cols, bz_height, z_level, top_grid_vtx, vtx_intersection
