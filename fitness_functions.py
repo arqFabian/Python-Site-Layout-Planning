@@ -21,7 +21,11 @@ print("origin vertex loaded")
 site_volumes = np.load(blender_file_path + '/site_volumes.npy')
 
 site_information = np.load(blender_file_path + '/site_information.npy')
-D, dx_rows, dy_cols, bx_rows, by_cols, bz_height, z_level = zip(*site_information)
+D, dx_rows, dy_cols, bx_rows, by_cols, bz_height, z_level = site_information
+
+#print(dx_rows)
+
+#breakpoint()
 
 # volumes =list(range(-10,200)) #substitute this volume list for the actual calculations
 # volumes = [-1]*8+[2]*8+[-3]*8+[-4]*8

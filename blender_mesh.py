@@ -18,14 +18,14 @@ def site_analysis(grid_size, full_site, land_extents_for_analysis, building_for_
                   blender_file_path, slp_app_file_path, ):
     # determine the variables from the inputs
 
-    d = grid_size
+    d = (grid_size)
     site = bpy.data.objects.get(full_site)  # the full site chosen for analysis and intersection
     land = bpy.data.objects.get(
         land_extents_for_analysis)  # land is the rectangular plane representing the area on the site that allows for the building construction, it projects the extents of the grid its dimensions must be integers.
     building = bpy.data.objects.get(building_for_analysis)  # chosen building to be tested for site layout planning
     level = bpy.data.objects.get(
         level_for_implantation)  # a rectangular plane whose z coordinate determines the level of the platform where the building will be constructed.
-    height_of_grid = 10
+    height_of_grid = 10 # height at which the grid was supposed to be inserted
     print("Terrain selected: " + str(full_site))
     print("Land selected: " + str(land_extents_for_analysis))
     print("building selected: " + str(building_for_analysis))
@@ -33,7 +33,7 @@ def site_analysis(grid_size, full_site, land_extents_for_analysis, building_for_
     print("Grid size: " + str(grid_size) + " m")
 
     # measuring the land and creating top grid and saving the vertex on the top grid
-    if land != None:
+    if land is not None:
         print("found the mesh")
         print("land mesh is located at ", land.location.x, ", ", land.location.y, ", ", land.location.z)
         print("with bounding box ", land.dimensions.x, ", ", land.dimensions.y, ", ", land.dimensions.z)
@@ -72,7 +72,7 @@ def site_analysis(grid_size, full_site, land_extents_for_analysis, building_for_
 
         # Delete "top_grid_of_analysis" since it won't be used anymore
         obj = bpy.data.objects.get("top_grid_of_analysis")
-        if obj != None:
+        if obj is not None:
             # Remove the object from the scene
             bpy.data.objects.remove(obj)
         else:
@@ -81,7 +81,7 @@ def site_analysis(grid_size, full_site, land_extents_for_analysis, building_for_
         print("mesh not found")
 
     # This section establishes the new level location base on the height (z value) position of a plane
-    if level != None:
+    if level is not None:
         z_level = float(level.location.z)
         print(z_level)
         np.save(blender_file_path + 'z_level',
@@ -89,7 +89,7 @@ def site_analysis(grid_size, full_site, land_extents_for_analysis, building_for_
     else:
         print("level location '" + str(level_for_implantation) + "' not found")
 
-    # This section analizes dimensions of the new building
+    # This section analyzes dimensions of the new building
     if building is not None:
         bx_rows = int(building.dimensions.x)
         by_cols = int(building.dimensions.y)
@@ -171,7 +171,7 @@ def site_analysis(grid_size, full_site, land_extents_for_analysis, building_for_
     bpy.context.scene.collection.objects.link(obj)
     print('Visualization of intersection mesh completed as "mesh_intersection" for the site: ' + str(full_site))
 
-    site_information = list(zip(d, dx_rows, dy_cols, bx_rows, by_cols, bz_height, z_level))
+    site_information = d, dx_rows, dy_cols, bx_rows, by_cols, bz_height, z_level
     np.save(blender_file_path + '/site_information', site_information)  # file containing all variables
 
     print("score values successfully saved")
