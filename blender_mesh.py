@@ -176,3 +176,5 @@ def site_analysis(grid_size, full_site, land_extents_for_analysis, building_for_
 
     print("score values successfully saved")
     return d, dx_rows, dy_cols, bx_rows, by_cols, bz_height, z_level, top_grid_vtx, vtx_intersection
+
+

@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits import mplot3d
 from mpl_toolkits.mplot3d import Axes3D
 
-NUMBER_SOLUTIONS_TO_PLOT = 1
+NUMBER_SOLUTIONS_TO_PLOT = 10
 
 blender_file_path = "/Users/arqfa/OneDrive/Desktop/Research"
 
@@ -40,6 +40,8 @@ def radar_plot (sorted_values_input, number_of_plotted_solutions):
     fig.show()
 
     print ('Plot Successful')
+
+    return
 
 slp_plot = radar_plot(scores_coordinates_sorted, NUMBER_SOLUTIONS_TO_PLOT)
 

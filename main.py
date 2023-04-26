@@ -19,6 +19,7 @@ from os import system
 from scipy.optimize import minimize
 from mpl_toolkits import mplot3d
 from mpl_toolkits.mplot3d import Axes3D
+from mathutils import Vector
 import plotly.graph_objects as go
 
 
@@ -26,7 +27,7 @@ import plotly.graph_objects as go
 D = 1
 sites = ["T0-West2","test-site-1", "test-site-2", "test-site-3", "T4-Lake"] # list of the sites, in this form since we are manipulating several terrains from a single file
 SITE = str(sites[1]) # the number represents the chosen name from the list "sites"
-LAND = "AreaSelection8x4" # name of the chosen land mesh reprensenting the area inside the site to be used.
+LAND = "AreaSelection" # name of the chosen land mesh reprensenting the area inside the site to be used.
                         # The LAND should be decided based on legislation and area of interest but for now it must be a rectangular shape
 BUILDING = "building4x4" # name of the building mesh for wich we are calculating
 LEVEL = "level_location" #name of the plane_mesh located at the desired level of implantation of building
@@ -147,9 +148,16 @@ if scores_coordinates_sorted is not None:
 else:
     print('cores_coordinates_sorted not saved')
 
+#sphere creation
+
+from position_visualization import sphere_creation
+
+sphere_creation(scores_coordinates_sorted, NUMBER_SOLUTIONS_TO_PLOT)
+
 #plotting graph
 
+from plot_radar import radar_plot, scatter_graph_3D
 slp_plot = radar_plot(scores_coordinates_sorted, NUMBER_SOLUTIONS_TO_PLOT)
-#from plot_radar import radar_plot, scatter_graph_3D
 
-#scatter_plot = scatter_graph_3D(score_values_sorted, NUMBER_SOLUTIONS_TO_PLOT)
+scatter_plot = scatter_graph_3D(scores_coordinates_sorted, NUMBER_SOLUTIONS_TO_PLOT)
+
