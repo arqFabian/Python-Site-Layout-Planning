@@ -14,6 +14,7 @@ import subprocess
 import matplotlib.pyplot as plt
 import trimesh
 import rtree
+import random
 
 from os import system
 from scipy.optimize import minimize
@@ -29,7 +30,7 @@ sites = ["T0-West2","test-site-1", "test-site-2", "test-site-3", "T4-Lake"] # li
 SITE = str(sites[1]) # the number represents the chosen name from the list "sites"
 LAND = "AreaSelection" # name of the chosen land mesh reprensenting the area inside the site to be used.
                         # The LAND should be decided based on legislation and area of interest but for now it must be a rectangular shape
-BUILDING = "building4x4" # name of the building mesh for wich we are calculating
+BUILDING = "building10x10" # name of the building mesh for wich we are calculating
 LEVEL = "level_location" #name of the plane_mesh located at the desired level of implantation of building
 
 K_FACTOR = 10 # Penalization value "k" applied during the activation formula
@@ -44,10 +45,6 @@ NUMBER_SOLUTIONS_TO_PLOT = 5
 #paths
 SLP_APP_PATH = 'C:/Users/arqfa/PycharmProjects/site_layout' # path to the site_layout app directory.
 sys.path.append(SLP_APP_PATH)
-
-# Dummy list for trees can be deleted once the tree detection module  have
-# been calculated
-site_trees = [0, 1, 0.5, 0, 0.25] * 500
 
 #cleaning the console for a fresh start on the execution
 
@@ -71,6 +68,13 @@ print ("!!!!" + SITE)
 # path of the blender file we are using.
 blender_file_path = bpy.path.abspath("//")  # This will update when using on different blender files.
 print (blender_file_path)
+
+# Dummy list for trees can be deleted once the tree detection module  has been calculated
+
+random.seed(123)  # set seed value
+site_trees = [random.randint(0, 1) for _ in range(10000)]
+np.save(blender_file_path + '/site_trees.npy',
+        site_trees)  # This file can be deleted once there is a tree creation module
 
 
 # importing the blender_mesh module for measuring and intersection
@@ -121,7 +125,6 @@ original_values = list(zip(f1_earthwork_vol, f2_earthwork_costs, f3_deforestatio
 print("fitness functions calculated successfully for " + str(len(available_positions)) + " values")
 # Activation Function + final normalization
 
-
 activated_f1 = activation_function(f1_earthwork_vol, K_FACTOR, T0_INFLECTION_VALUE)
 activated_f2 = activation_function(f2_earthwork_costs, K_FACTOR, T0_INFLECTION_VALUE)
 activated_f3 = activation_function(f3_deforestation_value, K_FACTOR, T0_INFLECTION_VALUE)
@@ -156,8 +159,8 @@ sphere_creation(scores_coordinates_sorted, NUMBER_SOLUTIONS_TO_PLOT)
 
 #plotting graph
 
-from plot_radar import radar_plot, scatter_graph_3D
-slp_plot = radar_plot(scores_coordinates_sorted, NUMBER_SOLUTIONS_TO_PLOT)
+#from plot_radar import radar_plot, scatter_graph_3D
+#slp_plot = radar_plot(scores_coordinates_sorted, NUMBER_SOLUTIONS_TO_PLOT)
 
-scatter_plot = scatter_graph_3D(scores_coordinates_sorted, NUMBER_SOLUTIONS_TO_PLOT)
+#scatter_plot = scatter_graph_3D(scores_coordinates_sorted, NUMBER_SOLUTIONS_TO_PLOT)
 

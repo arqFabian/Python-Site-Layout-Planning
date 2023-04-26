@@ -2,8 +2,6 @@ import bpy, bmesh
 import numpy as np
 from mathutils import Vector
 
-coordinates = [(0, 0, 0), (1, 1, 1), (2, 2, 2)]
-
 blender_file_path = "/Users/arqfa/OneDrive/Desktop/Research"
 
 scores_coordinates_sorted = np.load(blender_file_path + '/scores_coordinates_sorted.npy', allow_pickle=True)

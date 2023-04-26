@@ -1,11 +1,12 @@
 import math
 import numpy as np
+import random
 
 K_FACTOR = 10 # Penalization value "k" applied during the activation formula
 T0_INFLECTION_VALUE = 0.5 # inflection value "t0" applied during the activation formula. It must be from 0 to 1
 
 WEIGHTS = [0.5, 0.3, 0.2]
-NUMBER_SOLUTIONS_TO_PLOT = 2
+NUMBER_SOLUTIONS_TO_PLOT = 5
 
 blender_file_path = "/Users/arqfa/OneDrive/Desktop/Research"
 
@@ -27,17 +28,11 @@ print("origin vertex loaded")
 
 site_volumes = np.load(blender_file_path + '/site_volumes.npy')
 
-
-
-#print(site_information[5])
-
-#breakpoint()
-
-# volumes =list(range(-10,200)) #substitute this volume list for the actual calculations
-# volumes = [-1]*8+[2]*8+[-3]*8+[-4]*8
-site_trees = [0, 1, 0.5, 0, 0.25] * 100
 print("there are " + str(len(site_volumes)) + " independent volumes on the grid of the site")
 # print (volumes)
+#site_trees = [0, 1, 0.5, 0, 0.25] * 1000
+site_trees = np.load(blender_file_path + '/site_trees.npy')
+print("tree information loaded")
 
 #print(site_volumes)
 
@@ -62,14 +57,6 @@ def available_positions_function(list_of_vertex, distance_x, distance_y, buildin
 available_positions = available_positions_function(top_grid_vtx, dx_rows, dy_cols, bx_rows, by_cols)
 print("there are " + str(len(available_positions)) + " available positions on the grid")
 
-#breakpoint()
-
-"""
-Dummy lists
-This lists need to be replaced with their equivalent from the actual data.
-Specifically "Volumes" and "Trees"
-"""
-
 
 # fitness functions
 
@@ -79,7 +66,6 @@ def f1_earthwork_vol_function(available_position_list, volume_list):
     positions = available_position_list
     volume = volume_list
     f1 = []
-    ##f1_2 = []
 
     for i in range(len(positions)):  # determine the number of available position to calculate f1
         j_max = (by_cols / D)
@@ -105,10 +91,6 @@ def f1_earthwork_vol_function(available_position_list, volume_list):
 
         # Creation of the lists with the values per position for the fitness function prior to the normalization
         f1.append(rounded_vol_sum)
-        ##f1_2.append(rounded_vol_sum2)
-
-    ##print(f1)
-    ##print(f1_2)
 
     return f1
 
@@ -172,8 +154,8 @@ def f3_deforestation_function(available_position_list, tree_list):
         j_max = (by_cols / D)
 
         f3_partials = []
-        for j in range(
-                int(j_max)):  # determine the number of rows to add up equivalent to the number of rows of the building projection
+        for j in range(int(j_max)):  # determine the number of rows to add up equivalent to the
+            # number of rows of the building projection
             # determines the partial intervals of sums that add up to the building projection
             k_min = j * (dx_rows / D) + i
             k_max = k_min + (bx_rows / D)
@@ -187,6 +169,7 @@ def f3_deforestation_function(available_position_list, tree_list):
 
         # Creation of the lists with the values per position for the fitness function prior to the normalization
         f3.append(tree_sum)
+
 
     # print("These are the results for the " + (str(len(available_positions))) + " possible positions")
     # print("For f3-deforestation value: ")
@@ -204,8 +187,9 @@ def normalization_of_functions(input_list):
     n_list = input_list  # List to normalize
     list_max = max(n_list)
     print("max original " + str(max(n_list)))
+    print("min original " + str(min(n_list)))
     list_min = 0  # optimizing for zero
-    #list_min = min(n_list) # optimizing for the lowest value
+    #list_min = min(n_list)  # optimizing for the lowest value
     normalized_result = []
     for value in n_list:
         normalization = (list_max - value) / (list_max - list_min)
@@ -215,9 +199,9 @@ def normalization_of_functions(input_list):
     return normalized_result
 
 
-f1_normalized = normalization_of_functions(f1_earthwork_vol)
-f2_normalized = normalization_of_functions(f2_earthwork_costs)
-f3_normalized = normalization_of_functions(f3_deforestation_value)
+#f1_normalized = normalization_of_functions(f1_earthwork_vol)
+#f2_normalized = normalization_of_functions(f2_earthwork_costs)
+#f3_normalized = normalization_of_functions(f3_deforestation_value)
 
 # Activation Function + final normalization
 
@@ -378,5 +362,5 @@ np.save(blender_file_path + '/scores_coordinates_sorted.npy',
 
 print(scores_coordinates_sorted[0][8])
 
-print(top_grid_vtx[821])
+print(top_grid_vtx[930])
 
