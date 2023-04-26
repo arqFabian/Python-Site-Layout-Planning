@@ -14,6 +14,7 @@ import subprocess
 import matplotlib.pyplot as plt
 import trimesh
 import rtree
+
 from os import system
 from scipy.optimize import minimize
 from mpl_toolkits import mplot3d
@@ -77,9 +78,8 @@ from blender_mesh import site_analysis
 
 
 D, dx_rows, dy_cols, bx_rows, by_cols, bz_height, z_level, top_grid_vtx, vtx_intersection = site_analysis(D, SITE, LAND, BUILDING, LEVEL, blender_file_path, SLP_APP_PATH)
-# print(d, dx_rows, dy_cols, bx_rows, by_cols, bz_height)
-print("the site and building variables have been calculated")
 
+print("the site and building variables have been calculated")
 
 
 # Volume calculation module
@@ -100,7 +100,7 @@ print("The volumes per segment of grid have been calculated. There are " + str(l
 # fitness function module
 
 from fitness_functions import available_positions_function, f1_earthwork_vol_function, f2_earthwork_costs_function, \
-    f3_deforestation_function, activation_function, temp_optimization_sorting
+    f3_deforestation_function, activation_function, temp_optimization_sorting, scores_coordinates_sorting_function
 
 # available positions
 available_positions = available_positions_function(top_grid_vtx, dx_rows, dy_cols, bx_rows, by_cols)
@@ -113,6 +113,9 @@ f1_earthwork_vol = f1_earthwork_vol_function(available_positions, site_volumes)
 f2_earthwork_costs = f2_earthwork_costs_function(available_positions, site_volumes)
 # f3 - Deforestation Value calculations
 f3_deforestation_value = f3_deforestation_function(available_positions, site_trees)
+
+# list with the original values
+original_values = list(zip(f1_earthwork_vol, f2_earthwork_costs, f3_deforestation_value))
 
 print("fitness functions calculated successfully for " + str(len(available_positions)) + " values")
 # Activation Function + final normalization
@@ -128,21 +131,25 @@ print("activated fitness functions calculated successfully for " + str(len(activ
 
 # optimization and sorting of solutions
 
-score_values_sorted, score_values = temp_optimization_sorting(NUMBER_SOLUTIONS_TO_PLOT, activated_values, available_positions, WEIGHTS)
-print("candidates sorted")
-if score_values is not None:
-    np.save(blender_file_path + '/score_values',
-            score_values)  # This file can be deleted once the data has been joined
-    print("score values successfully saved")
-    np.save(blender_file_path + '/score_values_sorted',
-            score_values_sorted)  # This file can be deleted once the data has been joined
-    print("sorted score values successfully saved")
+overall_score = temp_optimization_sorting(activated_values, WEIGHTS)
+
+scores_coordinates_sorted = scores_coordinates_sorting_function(NUMBER_SOLUTIONS_TO_PLOT, activated_values,
+                                                                original_values, available_positions, top_grid_vtx,
+                                                                overall_score, z_level)
+
+
+if scores_coordinates_sorted is not None:
+
+    np.save(blender_file_path + '/scores_coordinates_sorted',
+            scores_coordinates_sorted)  # This file can be deleted once the data has been joined
+    print("score coordinates values successfully saved")
 
 else:
-    print('score values not saved')
+    print('cores_coordinates_sorted not saved')
 
 #plotting graph
 
+slp_plot = radar_plot(scores_coordinates_sorted, NUMBER_SOLUTIONS_TO_PLOT)
 #from plot_radar import radar_plot, scatter_graph_3D
 
 #scatter_plot = scatter_graph_3D(score_values_sorted, NUMBER_SOLUTIONS_TO_PLOT)

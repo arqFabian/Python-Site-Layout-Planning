@@ -1,12 +1,6 @@
 import math
 import numpy as np
 
-
-"""dx_rows = 20
-dy_cols = 20
-bx_rows = 4
-by_cols = 4
-D = 1  # module size"""
 K_FACTOR = 10 # Penalization value "k" applied during the activation formula
 T0_INFLECTION_VALUE = 0.5 # inflection value "t0" applied during the activation formula. It must be from 0 to 1
 
@@ -15,12 +9,8 @@ NUMBER_SOLUTIONS_TO_PLOT = 2
 
 blender_file_path = "/Users/arqfa/OneDrive/Desktop/Research"
 
-vtx_origin = np.load(blender_file_path + '/top_grid_vtx.npy')
-print("origin vertex loaded")
-
-site_volumes = np.load(blender_file_path + '/site_volumes.npy')
-
 site_information = np.load(blender_file_path + '/site_information.npy')
+print("site information loaded")
 #D, dx_rows, dy_cols, bx_rows, by_cols, bz_height, z_level = site_information
 
 D = int(site_information[0])
@@ -30,6 +20,14 @@ bx_rows = int(site_information[3])
 by_cols = int(site_information[4])
 bz_height = int(site_information[5])
 z_level = int(site_information[6])
+
+top_grid_vtx = np.load(blender_file_path + '/top_grid_vtx.npy')
+print("origin vertex loaded")
+
+
+site_volumes = np.load(blender_file_path + '/site_volumes.npy')
+
+
 
 #print(site_information[5])
 
@@ -41,7 +39,7 @@ site_trees = [0, 1, 0.5, 0, 0.25] * 100
 print("there are " + str(len(site_volumes)) + " independent volumes on the grid of the site")
 # print (volumes)
 
-print(site_volumes)
+#print(site_volumes)
 
 def available_positions_function(list_of_vertex, distance_x, distance_y, building_x, building_y):
     # verts = list_of_vertex
@@ -61,7 +59,7 @@ def available_positions_function(list_of_vertex, distance_x, distance_y, buildin
     return available_positions_on_site
 
 
-available_positions = available_positions_function(vtx_origin, dx_rows, dy_cols, bx_rows, by_cols)
+available_positions = available_positions_function(top_grid_vtx, dx_rows, dy_cols, bx_rows, by_cols)
 print("there are " + str(len(available_positions)) + " available positions on the grid")
 
 #breakpoint()
@@ -257,46 +255,128 @@ activated_f3 = activation_function(f3_deforestation_value, K_FACTOR, T0_INFLECTI
 
 
 # list with the original values
-original_values = list(zip(available_positions, f1_earthwork_vol, f2_earthwork_costs, f3_deforestation_value))
+original_values = list(zip(f1_earthwork_vol, f2_earthwork_costs, f3_deforestation_value))
+
 
 # List with the normalized values
 activated_values = list(zip(activated_f1, activated_f2, activated_f3))
 
 # Review the combination of scores
 
+def temp_optimization_sorting2(number_of_solutions, activated_values_list, original_values_list,
+                              available_positions_list, weights_input):
+    overall_score = [round(sum(w * a for w, a in zip(weights_input, vals)), 3) for vals in activated_values_list]
 
-def temp_optimization_sorting(number_of_solutions, activated_values_list, available_positions_list, weights_input):
+    activated_f1, activated_f2, activated_f3 = zip(*activated_values_list)
 
-    optimization_list = [round(sum(w*a for w, a in zip(weights_input, vals)), 3) for vals in activated_values_list]
-    f1, f2, f3 = zip(*activated_values_list)
-    scores = list(zip(available_positions_list, optimization_list, f1, f2, f3))
+    f1_values, f2_values, f3_values = zip(*original_values_list)
+
+    scores = list(
+        zip(available_positions_list, overall_score, activated_f1, activated_f2, activated_f3, f1_values, f2_values,
+            f3_values))
     print('Scores for the available positions calculated successfully')
     scores_sorted = sorted(scores, key=lambda x: x[1], reverse=True)
     print('scores sorted successfully')
 
+    # preview of chosen candidates
     for i in range(int(number_of_solutions)):
         print(f"Candidate {i + 1}:")
         candidate = scores_sorted[i]
         print("Position: ", candidate[0])
-        print("Score: ", candidate[1])
+        print("Overall Score: ", candidate[1])
         print("function 1: ", candidate[2])
         print("function 2: ", candidate[3])
         print("function 3: ", candidate[4])
-
+        print("value f1: ", candidate[5])
+        print("value f2: ", candidate[6])
+        print("value f3: ", candidate[7])
     return scores_sorted, scores
 
 
-score_values_sorted, score_values = temp_optimization_sorting(NUMBER_SOLUTIONS_TO_PLOT, activated_values, available_positions, WEIGHTS)
-print("candidates sorted")
+def temp_optimization_sorting(activated_values_list, weights_input):
+    overall_score = [round(sum(w * a for w, a in zip(weights_input, vals)), 3) for vals in activated_values_list]
+    print("overall scores calculated")
+    return overall_score
 
-np.save(blender_file_path + '/score_values',
-        score_values)  # This file can be deleted once the data has been joined
-print("score values successfully saved")
-np.save(blender_file_path + '/score_values_sorted',
-        score_values_sorted)  # This file can be deleted once the data has been joined
-print("sorted score values successfully saved")
 
-#table_list = create_nested_list(score_values_list, activated_f1, activated_f2, activated_f3)
-#print(table_list[2])
+# score_values_sorted, score_values = temp_optimization_sorting(NUMBER_SOLUTIONS_TO_PLOT, activated_values,
+# original_values, available_positions, WEIGHTS)
 
+overall_score = temp_optimization_sorting(activated_values, WEIGHTS)
+
+
+def scores_coordinates_sorting_function (number_of_solutions, activated_values_list, original_values_list,
+                                         available_positions_list, vtx_coordinates_list, overall_score_list,
+                                         level_for_implantation):
+    activated_f1, activated_f2, activated_f3 = zip(*activated_values_list)
+
+    f1_values, f2_values, f3_values = zip(*original_values_list)
+
+    # replace the height of the locations
+    for sublist in vtx_coordinates_list:
+        sublist[2] = level_for_implantation
+
+    available_coordinates = []
+    for i in range(len(available_positions_list)):
+        location = available_positions_list[i]
+        #print(location)
+        coordinates = vtx_coordinates_list[int(location)]
+        available_coordinates.append(coordinates)
+    print (len(available_coordinates))
+
+    scores = list(
+        zip(available_positions_list, overall_score_list, activated_f1, activated_f2, activated_f3, f1_values,
+            f2_values,
+            f3_values, available_coordinates))
+    print('Scores for the available positions calculated successfully')
+    scores_sorted = sorted(scores, key=lambda x: x[1], reverse=True)
+    print('scores sorted successfully')
+
+    print(scores_sorted[0])
+
+    scores_coordinates_sorted = []
+    for tup in scores_sorted:
+        tup_list = list(tup)
+        for i, item in enumerate(tup_list):
+            if isinstance(item, np.ndarray):
+                tup_list[i] = item.tolist()
+        scores_coordinates_sorted.append(tuple(tup_list))
+
+    print(scores_coordinates_sorted[0])
+
+    # preview of chosen candidates
+    for i in range(int(number_of_solutions)):
+        print(f"Candidate {i + 1}:")
+        candidate = scores_coordinates_sorted[i]
+        print("Position: ", candidate[0])
+        print("Overall Score: ", candidate[1])
+        print("function 1: ", candidate[2])
+        print("function 2: ", candidate[3])
+        print("function 3: ", candidate[4])
+        print("value f1: ", candidate[5])
+        print("value f2: ", candidate[6])
+        print("value f3: ", candidate[7])
+        print("coordinates", candidate[8])
+
+    # print (list_of_vtx_coordinates)
+
+    scores_coordinates_sorted = np.array(scores_coordinates_sorted, dtype=object)
+    np.savetxt(blender_file_path +'\scores_coordinates_sorted.txt', scores_coordinates_sorted, delimiter=',', fmt='%s')
+
+    print("sorted score values successfully saved as scores_coordinates_sorted.txt ")
+    return scores_coordinates_sorted
+
+
+#scores_coordinates_sorted = grid_control_coordinates_function(vtx_origin, score_values_sorted, z_level)
+scores_coordinates_sorted = scores_coordinates_sorting_function(NUMBER_SOLUTIONS_TO_PLOT, activated_values,
+                                                                original_values, available_positions, top_grid_vtx,
+                                                                overall_score, z_level)
+
+np.save(blender_file_path + '/scores_coordinates_sorted.npy',
+        scores_coordinates_sorted)  # This file can be deleted once the data has been joined
+
+
+print(scores_coordinates_sorted[0][8])
+
+print(top_grid_vtx[821])
 

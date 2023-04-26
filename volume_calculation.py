@@ -1,9 +1,6 @@
 import numpy as np
 
 
-D = 1
-dx_rows = 20
-dy_cols = 20
 blender_file_path = "/Users/arqfa/OneDrive/Desktop/Research"
 vtx_origin = np.load(blender_file_path + '/top_grid_vtx.npy')
 print("origin vertex loaded")
@@ -15,6 +12,17 @@ z_level = np.load(blender_file_path + '/z_level.npy')
 print("Intersection data loaded")
 print(z_level)
 
+site_information = np.load(blender_file_path + '/site_information.npy')
+print("site information loaded")
+#D, dx_rows, dy_cols, bx_rows, by_cols, bz_height, z_level = site_information
+
+D = int(site_information[0])
+dx_rows = int(site_information[1])
+dy_cols = int(site_information[2])
+bx_rows = int(site_information[3])
+by_cols = int(site_information[4])
+bz_height = int(site_information[5])
+z_level = int(site_information[6])
 
 ###
 # This funciton extract the z coordinate from the vtx intersections.

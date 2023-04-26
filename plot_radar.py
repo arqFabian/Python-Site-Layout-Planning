@@ -5,20 +5,20 @@ import matplotlib.pyplot as plt
 from mpl_toolkits import mplot3d
 from mpl_toolkits.mplot3d import Axes3D
 
-NUMBER_SOLUTIONS_TO_PLOT = 10
+NUMBER_SOLUTIONS_TO_PLOT = 1
 
 blender_file_path = "/Users/arqfa/OneDrive/Desktop/Research"
 
-available_positions = np.load(blender_file_path + '/available_positions.npy')
-print("available positions successfully loaded")
-score_values_sorted = np.load(blender_file_path + '/score_values_sorted.npy')  # This file can be deleted once the data has been joined
+scores_coordinates_sorted = np.load(blender_file_path + '/scores_coordinates_sorted.npy', allow_pickle=True)
 print("sorted score values successfully loaded")
 
 #Radar graph
+
 def radar_plot (sorted_values_input, number_of_plotted_solutions):
     n = number_of_plotted_solutions
-    position_id, scores, f1, f2, f3 = list(zip(*sorted_values_input))
-    activated_functions = list(zip(f1,f2,f3))
+    available_positions, overall_score, activated_f1, activated_f2, activated_f3, f1_values, f2_values, f3_values, \
+    available_coordinates = list(zip(*sorted_values_input))
+    activated_functions = list(zip(activated_f1, activated_f2, activated_f3))
     categories = ['f1 Earthwork values', 'f2 earthwork costs', 'f3 deforestation values']
     fig = go.Figure()
     for i in range(n):
@@ -26,7 +26,7 @@ def radar_plot (sorted_values_input, number_of_plotted_solutions):
             r=activated_functions[i],
             theta=categories,
             fill='toself',
-            name='Position' + str(position_id[i])
+            name='Position' + str(available_positions[i])
         ))
     fig.update_layout(
         polar=dict(
@@ -41,20 +41,21 @@ def radar_plot (sorted_values_input, number_of_plotted_solutions):
 
     print ('Plot Successful')
 
+slp_plot = radar_plot(scores_coordinates_sorted, NUMBER_SOLUTIONS_TO_PLOT)
 
-slp_plot = radar_plot(score_values_sorted, NUMBER_SOLUTIONS_TO_PLOT)
 
 #scatter graph
 
 def scatter_graph_3D(sorted_values_input, number_of_plotted_solutions):
     n = number_of_plotted_solutions
-    position_id, scores, f1, f2, f3 = list(zip(*sorted_values_input))
+    available_positions, overall_score, activated_f1, activated_f2, activated_f3, f1_values, f2_values, f3_values, \
+    available_coordinates = list(zip(*sorted_values_input))
     categories = ['f1 Earthwork values', 'f2 earthwork costs', 'f3 deforestation values']
 
     # Assuming you have three lists of values representing the Pareto front for each fitness function
-    x = f1[:n]
-    y = f2[:n]
-    z = f3[:n]
+    x = activated_f1[:n]
+    y = activated_f2[:n]
+    z = activated_f3[:n]
 
     fig = plt.figure(figsize=(10, 6))  # Adjust figure size here
     ax = fig.add_subplot(projection='3d')
@@ -67,7 +68,7 @@ def scatter_graph_3D(sorted_values_input, number_of_plotted_solutions):
     ax.set_zlabel(categories[2])
 
     # Transpose the table data so that each list is a column
-    table_data = list(zip(position_id[:n], f1[:n], f2[:n], f3[:n]))
+    table_data = list(zip(available_positions[:n], activated_f1[:n], activated_f2[:n], activated_f3[:n]))
 
     # Add table
     col_labels = ['Position', categories[0], categories[1], categories[2]]
@@ -82,7 +83,6 @@ def scatter_graph_3D(sorted_values_input, number_of_plotted_solutions):
 
     return
 
-
-scatter_plot = scatter_graph_3D(score_values_sorted, NUMBER_SOLUTIONS_TO_PLOT)
+scatter_plot = scatter_graph_3D(scores_coordinates_sorted, NUMBER_SOLUTIONS_TO_PLOT)
 
 
