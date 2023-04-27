@@ -43,8 +43,44 @@ def radar_plot(sorted_values_input, number_of_plotted_solutions):
 
     return
 
-
 slp_plot = radar_plot(scores_coordinates_sorted, NUMBER_SOLUTIONS_TO_PLOT)
+
+
+def radar_plot_single(sorted_values_input):
+    available_positions, overall_score, activated_f1, activated_f2, activated_f3, f1_values, f2_values, f3_values, \
+    available_coordinates = list(zip(*sorted_values_input))
+    activated_functions = list(zip(activated_f1, activated_f2, activated_f3))
+    categories = ['f1 Earthwork values', 'f2 earthwork costs', 'f3 deforestation values']
+    fig = go.Figure()
+    fig.add_trace(go.Scatterpolar(
+        r=activated_functions[0],
+        theta=categories,
+        fill='toself',
+        name='Position' + str(available_positions[0])
+    ))
+    fig.update_layout(
+        polar=dict(
+            radialaxis=dict(
+                visible=True,
+                range=[0, 1]
+            )),
+        showlegend=False
+    )
+
+    fig.show()
+
+    print('Plot Successful')
+
+    return
+
+
+#radar_plot_single(scores_coordinates_sorted[0],1)
+#for i in range(int(NUMBER_SOLUTIONS_TO_PLOT)):
+    #scores = scores_coordinates_sorted[i]
+   # print (scores)
+    #n = 1
+    #radar_plot(scores)
+
 
 
 # column graph
@@ -114,9 +150,9 @@ def scatter_graph_3D(sorted_values_input, number_of_plotted_solutions):
     ax.scatter(x, y, z)
 
     # Add labels for the axes
-    ax.set_xlabel(categories[0])
-    ax.set_ylabel(categories[1])
-    ax.set_zlabel(categories[2])
+    ax.set_xlabel(categories[1])
+    ax.set_ylabel(categories[2])
+    ax.set_zlabel(categories[3])
 
     # Add labels for each dot
     for i in range(n):
