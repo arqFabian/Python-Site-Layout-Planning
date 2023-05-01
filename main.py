@@ -102,7 +102,7 @@ site_volumes = volume_formula(dx_rows, dy_cols, D, z_coord_intersection, z_level
 print("##############")
 print("The volumes per segment of grid have been calculated. There are " + str(len(site_volumes)))
 
-# fitness function module
+# fitness function module transformation
 
 from fitness_functions import available_positions_function, f1_earthwork_vol_function, f2_earthwork_costs_function, \
     f3_deforestation_function, activation_function, temp_optimization_sorting, scores_coordinates_sorting_function
@@ -153,9 +153,9 @@ else:
 
 #sphere creation
 
-from position_visualization import sphere_creation
+#from position_visualization import sphere_creation
 
-sphere_creation(scores_coordinates_sorted, NUMBER_SOLUTIONS_TO_PLOT)
+#sphere_creation(scores_coordinates_sorted, NUMBER_SOLUTIONS_TO_PLOT)
 
 #plotting graph
 

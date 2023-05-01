@@ -60,31 +60,3 @@ vtx_intersection = intersection_trimesh(data,blender_file_path)
 
 
 
-"""# create some rays and find the intersection "rays - site"
-
-ray_origins = np.array(data)
-#print(ray_origins)
-# ray_directions pointing down
-ray_directions = np.array([[0, 0, -1]] * int(len(ray_origins)))
-
-# run trimesh to find the intersection between the rays and site
-locations, index_ray, index_tri = mesh.ray.intersects_location(
-
-    ray_origins=ray_origins,
-    ray_directions=ray_directions)
-
-# sorting the intersections based on the index of the rays to follow the order of the grid
-
-locations = np.array(locations)
-
-index_ray = np.array(index_ray)
-inds = index_ray.argsort()
-vtx_intersection = locations[inds]
-# print("this is the sorted list: " + str(sortedIntersections))
-print("Number of intersections: " + str(len(vtx_intersection)))
-# add a condition that verifies if the number of intersections is similar to the number of rays if not report an error
-
-
-# saving the intersections as "vtx_intersection.npy" file
-np.save(blender_file_path + '/vtx_intersection', vtx_intersection)"""
-
