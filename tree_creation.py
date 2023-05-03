@@ -68,3 +68,7 @@ def insert_trees(vtx_intersection_input, site_trees_input, tree_object_name):
 
 
 insert_trees(vtx_intersection, site_trees, tree_object)
+
+
+def tree_detection(vtx_intersection_input, tree_object_name):
+
