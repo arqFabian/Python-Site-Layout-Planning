@@ -1,11 +1,18 @@
 # imports necessary
 import bpy, bmesh
 import numpy as np
-
+import random
 from os import system
 
-# path of the blender file we are using.
-blender_file_path = bpy.path.abspath("//")  # This will update when using on different blender files.
+# constants
+
+tree_object = "tree"  # name of the existing tree object
+terrain_object = "land"  # name of the terrain we want to create trees
+
+# defining the paths for the project
+
+blender_file_path = bpy.path.abspath("//")  # path of the blender file, This will update when using on different
+# blender files.
 print(blender_file_path)
 
 # cleaning the console for a fresh start on the execution
@@ -14,20 +21,157 @@ cls = lambda: system('cls')
 
 cls()  # this function call will clear the console
 
-# Dummy list for trees can be deleted once the tree detection module  has been calculated
-
-site_trees = np.load(blender_file_path + 'site_trees.npy')
-print('site_trees loaded')
-vtx_intersection = np.load(blender_file_path + 'vtx_intersection.npy')
+# load vtx intersection list
+vtx_intersection = np.load(blender_file_path + 'vtx_intersection.npy')  # for testing the tree detection function
+# and has no influence on the rest of the script
 print('vtx_intersection loaded')
 
-tree_object = "tree"  # name of the existing tree object
+# Dummy list for trees can be deleted once the tree detection module  has been calculated
+
+# random.seed(123)  # set seed value
+# site_trees = [random.randint(0, 1) for _ in range(10000)]
+# np.save(blender_file_path + '/site_trees.npy',
+#        site_trees)  # This file can be deleted once there is a tree creation module
 
 
+# Start of tree creation
+print('Tree creation component')
+
+
+# function to create a particle system from a terrain and a weight map
+
+def create_particle_system(tree_object_input, terrain_object_input):
+    # Deselect all objects
+    bpy.ops.object.select_all(action='DESELECT')
+
+    # Select the "landscape" object
+    terrain = bpy.data.objects[terrain_object_input]
+    terrain.select_set(True)
+
+    particle_systems = terrain.particle_systems
+    if "tree_particle_system" in particle_systems:
+        bpy.ops.object.particle_system_remove()
+
+    # Create a new particle system for the terrain object
+    psys = terrain.modifiers.new("ParticleSettings", type='PARTICLE_SYSTEM').particle_system
+
+    # rename
+    psys.name = "tree_particle_system"
+
+    # Set particle system settings
+    psys.settings.count = 10
+    psys.settings.type = 'HAIR'
+    psys.settings.emit_from = 'VERT'
+    psys.settings.use_advanced_hair = True
+    psys.settings.rotation_mode = 'GLOB_Z'
+
+    # Set up the tree object as the particle object
+    psys.settings.render_type = 'OBJECT'
+    psys.settings.instance_object = bpy.data.objects[tree_object_input]
+    psys.settings.particle_size = 0.5
+    psys.settings.size_random = 0.1
+
+    # Set vertex group for density
+
+    # bpy.context.object.particle_systems["tree_particle_system"].vertex_group_density = "vegetation"
+    psys_group = terrain.particle_systems["tree_particle_system"]
+    psys_group.vertex_group_density = "vegetation"
+
+    # Update scene to reflect changes
+    bpy.context.view_layer.update()
+
+    print("Tree particle system created")
+    return
+
+
+create_particle_system(tree_object, terrain_object)
+
+
+# function to make the instances real to be
+
+def make_instances_real(terrain_object_input):
+    tree_collection_name = "Tree instances"
+
+    # check if the collection exists, otherwise create it
+    tree_collection = bpy.data.collections.get(tree_collection_name)
+
+    if tree_collection:
+        bpy.ops.object.select_all(action='DESELECT')
+        for obj in tree_collection.objects:
+            obj.select_set(True)
+        bpy.ops.object.delete()
+
+    if not tree_collection:
+        tree_collection = bpy.data.collections.new(tree_collection_name)
+        bpy.context.scene.collection.children.link(tree_collection)
+
+    # set tree collection as the active collection
+    bpy.context.view_layer.active_layer_collection = bpy.context.view_layer.layer_collection.children[
+        tree_collection_name]
+
+    # Deselect all objects
+    bpy.ops.object.select_all(action='DESELECT')
+
+    # Select the "landscape" object
+    terrain = bpy.data.objects[terrain_object_input]
+    terrain.select_set(True)
+
+    # Make the instances real
+    bpy.ops.object.duplicates_make_real()
+
+    # Add the new objects to the tree collection
+    tree_instances = bpy.data.collections[tree_collection_name]
+    terrain_source = bpy.data.objects[terrain_object_input].users_collection[0]
+    for obj in bpy.context.selected_objects:
+        terrain_source.objects.unlink(obj)
+        tree_instances.objects.link(obj)
+
+
+make_instances_real(terrain_object)
+
+
+# function to detect if there is a tree on the region
+def tree_detection(vtx_intersection_input):
+    # List of coordinates to check
+    coordinates = vtx_intersection_input
+    print(coordinates)
+
+    # Boolean list to store results
+    site_trees_result = []
+
+    # Get the current scene's dependency graph
+    depsgraph = bpy.context.evaluated_depsgraph_get()
+
+    # Iterate through coordinates and check for object
+    for coord in coordinates:
+        # Set up ray cast parameters
+        origin = tuple(map(float, coord))
+        direction = (0, 0, 1)
+        distance = 5
+
+        # Perform ray cast, providing the depsgraph as the first argument
+        hit, loc, norm, obj, matrix, _ = bpy.context.scene.ray_cast(depsgraph, origin, direction, distance=distance)
+
+        # If an object is hit, add 1 to the result list, otherwise add 0
+        if hit:
+            site_trees_result.append(1)
+        else:
+            site_trees_result.append(0)
+
+    print("site_trees detection successful. There are " + str(sum(site_trees_result)) + " under the selected area")
+
+    return site_trees_result
+
+
+# site_trees2 = tree_detection(vtx_intersection)
+# np.save(blender_file_path + '/site_trees2', site_trees2)
+# print("trees saved")
+
+
+# function to create trees based on a boolean list, it allows random list instead of particle systems
 def insert_trees(vtx_intersection_input, site_trees_input, tree_object_name):
-
     # get the coordinates and site tree values for the specified number of solutions to plot
-    coordinates = vtx_intersection_input[:5]
+    coordinates = vtx_intersection_input
     trees = site_trees_input
     tree_collection_name = "Tree Collection"
 
@@ -66,9 +210,4 @@ def insert_trees(vtx_intersection_input, site_trees_input, tree_object_name):
 
     return
 
-
-insert_trees(vtx_intersection, site_trees, tree_object)
-
-
-def tree_detection(vtx_intersection_input, tree_object_name):
-
+# insert_trees(vtx_intersection, site_trees2, tree_object)

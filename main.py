@@ -69,12 +69,7 @@ print ("!!!!" + SITE)
 blender_file_path = bpy.path.abspath("//")  # This will update when using on different blender files.
 print (blender_file_path)
 
-# Dummy list for trees can be deleted once the tree detection module  has been calculated
 
-random.seed(123)  # set seed value
-site_trees = [random.randint(0, 1) for _ in range(10000)]
-np.save(blender_file_path + '/site_trees.npy',
-        site_trees)  # This file can be deleted once there is a tree creation module
 
 
 # importing the blender_mesh module for measuring and intersection
@@ -94,28 +89,33 @@ from volume_calculation import z_coordinate_extraction, volume_formula
 z_coord_intersection = z_coordinate_extraction(vtx_intersection)
 z_coord_land = z_coordinate_extraction(top_grid_vtx)
 
-# print(str(len(z_coord_intersection)) + str(z_coord_intersection[0:5]))
-# print(str(len(z_coord_land)) + str(z_coord_land[0:5]))
-
 site_volumes = volume_formula(dx_rows, dy_cols, D, z_coord_intersection, z_level)
-
-print("##############")
 print("The volumes per segment of grid have been calculated. There are " + str(len(site_volumes)))
+
+# Tree detection module
+
+from tree_creation import tree_detection
+
+
+site_trees = tree_detection(vtx_intersection) # boolean list that reflects if there are trees above a vertex
+
 
 # fitness function module transformation
 
 from fitness_functions import available_positions_function, f1_earthwork_vol_function, f2_earthwork_costs_function, \
     f3_deforestation_function, activation_function, temp_optimization_sorting, scores_coordinates_sorting_function
 
-# available positions
+# available positions for the building
 available_positions = available_positions_function(top_grid_vtx, dx_rows, dy_cols, bx_rows, by_cols)
 print("there are " + str(len(available_positions)) + " available positions on the grid from the original " + str(
     len(top_grid_vtx)))
 
 # f1 - Earthwork volumes calculations function
 f1_earthwork_vol = f1_earthwork_vol_function(available_positions, site_volumes)
+
 # f2 - Earthwork costs calculations
 f2_earthwork_costs = f2_earthwork_costs_function(available_positions, site_volumes)
+
 # f3 - Deforestation Value calculations
 f3_deforestation_value = f3_deforestation_function(available_positions, site_trees)
 
