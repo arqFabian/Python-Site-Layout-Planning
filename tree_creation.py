@@ -1,13 +1,33 @@
 # imports necessary
 import bpy, bmesh
 import numpy as np
+import sys
 import random
 from os import system
 
-# constants
+# Constants and parameters
 
+# Site and object names
+
+sites = ["T0-West2", "test-site-1", "test-site-2", "test-site-3",
+         "T4-Lake"]  # list of the sites, in this form since we are manipulating several terrains from a single file
+SITE = str(sites[1])  # the number represents the chosen name from the list "sites" name of the terrain we want to
+                        # create trees
+
+LAND = "AreaSelection"  # name of the chosen land mesh reprensenting the area inside the site to be used.
+# The LAND should be decided based on legislation and area of interest but for now it must be a rectangular shape
+BUILDING = "building10x10"  # name of the building mesh for wich we are calculating
+LEVEL = "level_location"  # name of the plane_mesh located at the desired level of implantation of building
+
+# Algorithm parameters
+GRID_UNIT_SIZE = 1
+
+# tree constants
 tree_object = "tree"  # name of the existing tree object
-terrain_object = "land"  # name of the terrain we want to create trees
+
+# paths for python scripts
+SLP_APP_PATH = 'C:/Users/arqfa/PycharmProjects/site_layout'  # path to the site_layout app directory.
+sys.path.append(SLP_APP_PATH)
 
 # defining the paths for the project
 
@@ -16,7 +36,6 @@ blender_file_path = bpy.path.abspath("//")  # path of the blender file, This wil
 print(blender_file_path)
 
 # cleaning the console for a fresh start on the execution
-
 cls = lambda: system('cls')
 
 cls()  # this function call will clear the console
@@ -36,6 +55,12 @@ print('vtx_intersection loaded')
 
 # Start of tree creation
 print('Tree creation component')
+
+# creation of top mesh for tree detection
+from blender_mesh import land_top_grid_analysis
+
+top_grid_vtx, dx_rows, dy_cols, height = land_top_grid_analysis(GRID_UNIT_SIZE, SITE, LAND,
+                                                                blender_file_path, SLP_APP_PATH)
 
 
 # function to create a particle system from a terrain and a weight map
@@ -84,7 +109,7 @@ def create_particle_system(tree_object_input, terrain_object_input):
     return
 
 
-create_particle_system(tree_object, terrain_object)
+create_particle_system(tree_object, SITE)
 
 
 # function to make the instances real to be
@@ -127,7 +152,7 @@ def make_instances_real(terrain_object_input):
         tree_instances.objects.link(obj)
 
 
-make_instances_real(terrain_object)
+make_instances_real(SITE)
 
 
 # function to detect if there is a tree on the region
@@ -163,9 +188,44 @@ def tree_detection(vtx_intersection_input):
     return site_trees_result
 
 
-# site_trees2 = tree_detection(vtx_intersection)
-# np.save(blender_file_path + '/site_trees2', site_trees2)
-# print("trees saved")
+def tree_detection1(top_grid_vtx_input, site_input):
+    # List of coordinates to check
+    coordinates = top_grid_vtx_input
+    site = site_input
+
+    if coordinates and site:
+        # Boolean list to store results
+        site_trees_result = []
+
+        # Get the current scene's dependency graph
+        depsgraph = bpy.context.evaluated_depsgraph_get()
+
+        # Iterate through coordinates and check for object
+        for coord in coordinates:
+            # Set up ray cast parameters
+            origin = tuple(map(float, coord))
+            direction = (0, 0, -1)
+            distance = 20
+
+            # Perform ray cast, providing the depsgraph as the first argument
+            hit, loc, norm, obj, matrix, _ = bpy.context.scene.ray_cast(depsgraph, origin, direction, distance=distance)
+
+            # If an object is hit, add 1 to the result list, otherwise add 0
+            if hit:
+                site_trees_result.append(1)
+            else:
+                site_trees_result.append(0)
+    else:
+        print("")
+
+    print(f"site_trees detection successful. There are {str(sum(site_trees_result))} under the selected area")
+
+    return site_trees_result
+
+
+#site_trees = tree_detection(top_grid_vtx, SITE)
+#np.save(blender_file_path + '/site_trees2', site_trees)
+#print("trees saved")
 
 
 # function to create trees based on a boolean list, it allows random list instead of particle systems

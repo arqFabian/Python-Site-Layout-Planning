@@ -14,11 +14,13 @@ import numpy as np
 
 blender_file_path = "/Users/arqfa/OneDrive/Desktop/Research/"
 # mesh
-#import mesh representing the site from blender
+# import mesh representing the site from blender
 mesh = trimesh.load(blender_file_path + 'terrain.glb', force='mesh')
-#load data from blender grid origin
+# load data from blender grid origin
 data = np.load(blender_file_path + 'top_grid_vtx.npy')
-def intersection_trimesh (top_grid_vtx_input, blender_file_path_input):
+
+
+def intersection_trimesh(top_grid_vtx_input, blender_file_path_input):
     # mesh
     # import mesh representing the site from blender
     mesh = trimesh.load(blender_file_path_input + '/terrain.glb', force='mesh')
@@ -56,7 +58,5 @@ def intersection_trimesh (top_grid_vtx_input, blender_file_path_input):
         print("mesh and data not found")
     return vtx_intersection
 
-vtx_intersection = intersection_trimesh(data,blender_file_path)
 
-
-
+vtx_intersection = intersection_trimesh(data, blender_file_path)

@@ -97,7 +97,12 @@ print("The volumes per segment of grid have been calculated. There are " + str(l
 from tree_creation import tree_detection
 
 
-site_trees = tree_detection(vtx_intersection) # boolean list that reflects if there are trees above a vertex
+#site_trees = tree_detection(vtx_intersection) # boolean list that reflects if there are trees above a vertex
+random.seed(123)  # set seed value
+site_trees = [random.randint(0, 1) for _ in range(10000)]
+np.save(blender_file_path + '/site_trees.npy',
+        site_trees)  # This file can be deleted once there is a tree creation module
+
 
 
 # fitness function module transformation
