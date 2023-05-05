@@ -142,6 +142,5 @@ if scores_coordinates_sorted is not None:
 else:
     print('score_coordinates_sorted not saved')
 
-"test"
 
 
