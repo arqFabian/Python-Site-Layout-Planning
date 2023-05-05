@@ -5,34 +5,30 @@
 """
 Fragment of code that identifies the intersection point between the site
 and rays with origin on a grid stationed above the bounds of the site.
-The scripts works outside the frame of blender.
+The script works outside the frame of blender.
 """
 
 import trimesh
-import rtree
 import numpy as np
 
 blender_file_path = "/Users/arqfa/OneDrive/Desktop/Research/"
-# mesh
-# import mesh representing the site from blender
-#mesh = trimesh.load(blender_file_path + 'terrain.glb', force='mesh')
+# Constants
+
 # load data from blender grid origin
 top_grid_vtx = np.load(blender_file_path + 'top_grid_vtx.npy')
 
+# function for generating intersection vtx  with trimesh
+
 
 def intersection_trimesh(top_grid_vtx_input, blender_file_path_input):
-    # mesh
 
     # import mesh representing the site from blender
     mesh_input = trimesh.load(blender_file_path_input + '/terrain.glb', force='mesh')
-    print("mesh loaded")
-    # create some rays and find the intersection "rays - site"
 
     # load data from blender grid origin
     top_data = top_grid_vtx_input
-    print("top vtx loaded")
-    # initialize vtx_intersection to None
-    vtx_intersection_trimesh = None
+
+    # create some rays and find the intersection "rays - site"
 
     if mesh_input and top_data is not None:
         ray_origins = np.array(top_data)
@@ -60,15 +56,15 @@ def intersection_trimesh(top_grid_vtx_input, blender_file_path_input):
                   f"the number of grid vertex ({str(len(top_data))})")
             # saving the intersections as "vtx_intersection.npy" file
             np.save(blender_file_path_input + '/vtx_intersection', vtx_intersection_trimesh)
+            print("vtx_intersection successfully saved as vtx_intersection.npy")
+
         else:
             print(f"number of intersections ({str(len(vtx_intersection_trimesh))}) doesn't coincide with "
                   f"the number of grid vertex ({str(len(top_data))})")
-
     else:
         print("mesh and data not found")
-        return None
 
     return vtx_intersection_trimesh
 
 
-#vtx_intersection = intersection_trimesh(top_grid_vtx, blender_file_path)
+vtx_intersection = intersection_trimesh(top_grid_vtx, blender_file_path)
