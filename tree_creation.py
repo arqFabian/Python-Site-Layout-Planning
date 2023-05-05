@@ -11,8 +11,9 @@ from os import system
 
 sites = ["T0-West2", "test-site-1", "test-site-2", "test-site-3",
          "T4-Lake"]  # list of the sites, in this form since we are manipulating several terrains from a single file
+
 SITE = str(sites[1])  # the number represents the chosen name from the list "sites" name of the terrain we want to
-                        # create trees
+# create trees
 
 LAND = "AreaSelection"  # name of the chosen land mesh reprensenting the area inside the site to be used.
 # The LAND should be decided based on legislation and area of interest but for now it must be a rectangular shape
@@ -24,6 +25,7 @@ GRID_UNIT_SIZE = 1
 
 # tree constants
 tree_object = "tree"  # name of the existing tree object
+tree_quantity_for_particles = 500
 
 # paths for python scripts
 SLP_APP_PATH = 'C:/Users/arqfa/PycharmProjects/site_layout'  # path to the site_layout app directory.
@@ -59,13 +61,12 @@ print('Tree creation component')
 # creation of top mesh for tree detection
 from blender_mesh import land_top_grid_analysis
 
-top_grid_vtx, dx_rows, dy_cols, height = land_top_grid_analysis(GRID_UNIT_SIZE, SITE, LAND,
-                                                                blender_file_path, SLP_APP_PATH)
+top_grid_vtx, dx_rows, dy_cols, height = land_top_grid_analysis(GRID_UNIT_SIZE, SITE, LAND, blender_file_path)
 
 
 # function to create a particle system from a terrain and a weight map
 
-def create_particle_system(tree_object_input, terrain_object_input):
+def create_particle_system(tree_object_input, terrain_object_input, tree_quantity_input):
     # Deselect all objects
     bpy.ops.object.select_all(action='DESELECT')
 
@@ -73,18 +74,33 @@ def create_particle_system(tree_object_input, terrain_object_input):
     terrain = bpy.data.objects[terrain_object_input]
     terrain.select_set(True)
 
-    particle_systems = terrain.particle_systems
+    # Duplicate the selected object
+    bpy.ops.object.duplicate()
+
+    # Get the duplicate object
+    terrain_duplicate = bpy.context.selected_objects[0]
+
+    # Set the name of the duplicate object
+    terrain_duplicate.name = terrain.name + "_vegetation"
+
+    # Deselect all objects
+    #bpy.ops.object.select_all(action='DESELECT')
+
+    #terrain_duplicate = bpy.data.objects[terrain_object_input]
+    terrain_duplicate.select_set(True)
+
+    particle_systems = terrain_duplicate.particle_systems
     if "tree_particle_system" in particle_systems:
         bpy.ops.object.particle_system_remove()
 
     # Create a new particle system for the terrain object
-    psys = terrain.modifiers.new("ParticleSettings", type='PARTICLE_SYSTEM').particle_system
+    psys = terrain_duplicate.modifiers.new("ParticleSettings", type='PARTICLE_SYSTEM').particle_system
 
     # rename
     psys.name = "tree_particle_system"
 
     # Set particle system settings
-    psys.settings.count = 10
+    psys.settings.count = tree_quantity_input
     psys.settings.type = 'HAIR'
     psys.settings.emit_from = 'VERT'
     psys.settings.use_advanced_hair = True
@@ -98,9 +114,12 @@ def create_particle_system(tree_object_input, terrain_object_input):
 
     # Set vertex group for density
 
-    # bpy.context.object.particle_systems["tree_particle_system"].vertex_group_density = "vegetation"
-    psys_group = terrain.particle_systems["tree_particle_system"]
+    psys_group = terrain_duplicate.particle_systems["tree_particle_system"]
     psys_group.vertex_group_density = "vegetation"
+
+    # hide emitter from view and render
+    bpy.context.object.show_instancer_for_viewport = False
+    bpy.context.object.show_instancer_for_render = False
 
     # Update scene to reflect changes
     bpy.context.view_layer.update()
@@ -109,14 +128,14 @@ def create_particle_system(tree_object_input, terrain_object_input):
     return
 
 
-create_particle_system(tree_object, SITE)
+create_particle_system(tree_object, SITE, tree_quantity_for_particles)
 
 
 # function to make the instances real to be
 
 def make_instances_real(terrain_object_input):
     tree_collection_name = "Tree instances"
-
+    terrain_name = terrain_object_input + '_vegetation'
     # check if the collection exists, otherwise create it
     tree_collection = bpy.data.collections.get(tree_collection_name)
 
@@ -138,7 +157,7 @@ def make_instances_real(terrain_object_input):
     bpy.ops.object.select_all(action='DESELECT')
 
     # Select the "landscape" object
-    terrain = bpy.data.objects[terrain_object_input]
+    terrain = bpy.data.objects[terrain_name]
     terrain.select_set(True)
 
     # Make the instances real
@@ -146,7 +165,7 @@ def make_instances_real(terrain_object_input):
 
     # Add the new objects to the tree collection
     tree_instances = bpy.data.collections[tree_collection_name]
-    terrain_source = bpy.data.objects[terrain_object_input].users_collection[0]
+    terrain_source = bpy.data.objects[terrain_name].users_collection[0]
     for obj in bpy.context.selected_objects:
         terrain_source.objects.unlink(obj)
         tree_instances.objects.link(obj)
@@ -156,44 +175,27 @@ make_instances_real(SITE)
 
 
 # function to detect if there is a tree on the region
-def tree_detection(vtx_intersection_input):
-    # List of coordinates to check
-    coordinates = vtx_intersection_input
-    print(coordinates)
 
-    # Boolean list to store results
-    site_trees_result = []
+def tree_detection_down(top_grid_vtx_input, site_input, top_grid_height_input):
+    print('starting down ray tracing')
 
-    # Get the current scene's dependency graph
-    depsgraph = bpy.context.evaluated_depsgraph_get()
-
-    # Iterate through coordinates and check for object
-    for coord in coordinates:
-        # Set up ray cast parameters
-        origin = tuple(map(float, coord))
-        direction = (0, 0, 1)
-        distance = 5
-
-        # Perform ray cast, providing the depsgraph as the first argument
-        hit, loc, norm, obj, matrix, _ = bpy.context.scene.ray_cast(depsgraph, origin, direction, distance=distance)
-
-        # If an object is hit, add 1 to the result list, otherwise add 0
-        if hit:
-            site_trees_result.append(1)
-        else:
-            site_trees_result.append(0)
-
-    print("site_trees detection successful. There are " + str(sum(site_trees_result)) + " under the selected area")
-
-    return site_trees_result
-
-
-def tree_detection1(top_grid_vtx_input, site_input):
     # List of coordinates to check
     coordinates = top_grid_vtx_input
     site = site_input
 
     if coordinates and site:
+        # Get the object by name
+        #site_obj = bpy.data.objects[site]
+
+        # Select and hide all objects that start with "terrain_"
+        for terrain_obj in bpy.data.objects:
+            if terrain_obj.name.startswith(site_input):
+                terrain_obj.hide_viewport = True
+
+        # Hide the object
+        #site_obj.hide_render = True
+        #site_obj.hide_viewport = True
+
         # Boolean list to store results
         site_trees_result = []
 
@@ -205,7 +207,7 @@ def tree_detection1(top_grid_vtx_input, site_input):
             # Set up ray cast parameters
             origin = tuple(map(float, coord))
             direction = (0, 0, -1)
-            distance = 20
+            distance = top_grid_height_input
 
             # Perform ray cast, providing the depsgraph as the first argument
             hit, loc, norm, obj, matrix, _ = bpy.context.scene.ray_cast(depsgraph, origin, direction, distance=distance)
@@ -215,6 +217,16 @@ def tree_detection1(top_grid_vtx_input, site_input):
                 site_trees_result.append(1)
             else:
                 site_trees_result.append(0)
+
+        # Unhide the object
+        #site_obj.hide_render = False
+        #site_obj.hide_viewport = False
+
+        # Unhide all objects that start with "terrain_"
+        for terrain_obj in bpy.data.objects:
+            if terrain_obj.name.startswith(site_input):
+                terrain_obj.hide_viewport = False
+
     else:
         print("")
 
@@ -223,13 +235,13 @@ def tree_detection1(top_grid_vtx_input, site_input):
     return site_trees_result
 
 
-#site_trees = tree_detection(top_grid_vtx, SITE)
-#np.save(blender_file_path + '/site_trees2', site_trees)
-#print("trees saved")
+site_trees = tree_detection_down(top_grid_vtx, SITE, height)
+np.save(blender_file_path + '/site_trees', site_trees)
+print("trees saved")
 
 
 # function to create trees based on a boolean list, it allows random list instead of particle systems
-def insert_trees(vtx_intersection_input, site_trees_input, tree_object_name):
+def insert_trees_from_site_tree_list(vtx_intersection_input, site_trees_input, tree_object_name):
     # get the coordinates and site tree values for the specified number of solutions to plot
     coordinates = vtx_intersection_input
     trees = site_trees_input
@@ -270,4 +282,4 @@ def insert_trees(vtx_intersection_input, site_trees_input, tree_object_name):
 
     return
 
-# insert_trees(vtx_intersection, site_trees2, tree_object)
+#insert_trees_from_site_tree_list(vtx_intersection, site_trees, tree_object)

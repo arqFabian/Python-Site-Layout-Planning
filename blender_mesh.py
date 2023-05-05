@@ -11,22 +11,86 @@ import subprocess
 from os import system
 
 
-# start of process def export():
+# top grid creation function
 
-def site_analysis(grid_size, full_site, land_extents_for_analysis, building_for_analysis, level_for_implantation,
-                   blender_file_path, slp_app_file_path, ):
+def land_top_grid_analysis(grid_size, full_site, land_extents_for_analysis, blender_file_path):
+    # determine the variables from the inputs
+
+    unit_grid_size = grid_size
+    site = bpy.data.objects.get(full_site)  # the full site chosen for analysis and intersection
+    land = bpy.data.objects.get(
+        land_extents_for_analysis)  # land is the rectangular plane representing the area on the site that allows for
+    # the building construction, it projects the extents of the grid its dimensions must be integers.
+    height_of_grid_above_site = 10  # height at which the grid was supposed to be inserted
+
+    print(f"Terrain selected: {full_site}")
+    print(f"Land selected: {land_extents_for_analysis}")
+    print(f"Grid size: {grid_size} m")
+
+    # measuring the land and creating top grid and saving the vertex on the top grid
+    if land is not None:
+
+        print(f"Land mesh is located at {land.location.x}, {land.location.y}, {land.location.z}")
+        print(f"With bounding box {land.dimensions.x}, {land.dimensions.y}, {land.dimensions.z}")
+
+        # Setting variables
+
+        land_x_dimension = int(land.dimensions.x)
+        land_y_dimension = int(land.dimensions.y)
+        height_of_grid_above_site_plus_site_z_bound = int(site.dimensions.z) + height_of_grid_above_site
+
+        vtx = [[i * land.dimensions.x / land_x_dimension + land.location.x - land.dimensions.x / 2.0,
+                j * land.dimensions.y / land_y_dimension + land.location.y - land.dimensions.y / 2.0,
+                land.dimensions.z + height_of_grid_above_site_plus_site_z_bound] for i in range(land_x_dimension + 1) for j in range(land_y_dimension + 1)]
+
+        faces = [[i * (land_y_dimension + 1) + j, (i + 1) * (land_y_dimension + 1) + j, (i + 1) * (land_y_dimension + 1) + j + 1] for i in
+                 range(land_x_dimension) for j in range(land_y_dimension)]
+        faces.extend(
+            [[i * (land_y_dimension + 1) + j, (i + 1) * (land_y_dimension + 1) + j + 1, i * (land_y_dimension + 1) + j + 1] for i in range(land_x_dimension)
+             for j in range(land_y_dimension)])
+
+        mesh = bpy.data.meshes.new("top_mesh")
+        mesh.from_pydata(vtx, [], faces)
+        obj = bpy.data.objects.new("top_grid_of_analysis", mesh)
+        bpy.context.scene.collection.objects.link(obj)
+        print("Top Grid created as: top_grid_of_analysis")
+
+        # saving the list of vertex of the "Top Grid" to be used on the mesh_intersection file with trimesh.
+        vtx_position = [x for l in vtx for x in l]
+        vtx_id = len(vtx)
+        top_grid_vtx = np.array_split(vtx_position, vtx_id)
+        np.save(blender_file_path + 'top_grid_vtx', top_grid_vtx)
+        print("ray origins for intersection exported as 'top_grid_vtx'")
+
+        # Delete "top_grid_of_analysis" since it won't be used anymore
+        obj = bpy.data.objects.get("top_grid_of_analysis")
+        if obj is not None:
+            # Remove the object from the scene
+            bpy.data.objects.remove(obj)
+        else:
+            print("Object with the name 'top_grid_of_analysis' not found")
+    else:
+        print("mesh not found")
+
+    return top_grid_vtx, land_x_dimension, land_y_dimension, height_of_grid_above_site_plus_site_z_bound
+
+
+# site analysis function
+
+def site_analysis(grid_size, site_selected, land_extents_for_analysis, building_for_analysis, level_for_implantation,
+                  blender_file_path, slp_app_file_path, ):
     # determine the variables from the inputs
 
     d = grid_size
-    site = bpy.data.objects.get(full_site)  # the full site chosen for analysis and intersection
+    site = bpy.data.objects.get(site_selected)  # the full site chosen for analysis and intersection
     land = bpy.data.objects.get(
         land_extents_for_analysis)  # land is the rectangular plane representing the area on the site that allows for
     # the building construction, it projects the extents of the grid its dimensions must be integers.
     building = bpy.data.objects.get(building_for_analysis)  # chosen building to be tested for site layout planning
     level = bpy.data.objects.get(level_for_implantation)  # a rectangular plane whose z coordinate determines the
     # level of the platform where the building will be constructed.
-    height_of_grid = 10  # height at which the grid was supposed to be inserted
-    print("Terrain selected: " + str(full_site))
+    height_of_grid_above_site = 10  # height at which the grid was supposed to be inserted
+    print("Terrain selected: " + str(site_selected))
     print("Land selected: " + str(land_extents_for_analysis))
     print("building selected: " + str(building_for_analysis))
     print("level selected: " + str(level_for_implantation))
@@ -40,22 +104,22 @@ def site_analysis(grid_size, full_site, land_extents_for_analysis, building_for_
 
         # Setting variables
 
-        dx_rows = int(land.dimensions.x)
-        dy_cols = int(land.dimensions.y)
-        height = int(site.dimensions.z) + height_of_grid
+        land_x_dimension = int(land.dimensions.x)
+        land_y_dimension = int(land.dimensions.y)
+        height_of_grid_above_site_plus_site_z_bound = int(site.dimensions.z) + height_of_grid_above_site
 
         vtx = []
-        for i in range(dx_rows + 1):
-            for j in range(dy_cols + 1):
-                vtx.append([i * land.dimensions.x / dx_rows + land.location.x - land.dimensions.x / 2.0,
-                            j * land.dimensions.y / dy_cols + land.location.y - land.dimensions.y / 2.0,
-                            land.dimensions.z + height])
+        for i in range(land_x_dimension + 1):
+            for j in range(land_y_dimension + 1):
+                vtx.append([i * land.dimensions.x / land_x_dimension + land.location.x - land.dimensions.x / 2.0,
+                            j * land.dimensions.y / land_y_dimension + land.location.y - land.dimensions.y / 2.0,
+                            land.dimensions.z + height_of_grid_above_site_plus_site_z_bound])
 
         faces = []
-        for i in range(dx_rows):
-            for j in range(dy_cols):
-                faces.append([i * (dy_cols + 1) + j, (i + 1) * (dy_cols + 1) + j, (i + 1) * (dy_cols + 1) + j + 1])
-                faces.append([i * (dy_cols + 1) + j, (i + 1) * (dy_cols + 1) + j + 1, i * (dy_cols + 1) + j + 1])
+        for i in range(land_x_dimension):
+            for j in range(land_y_dimension):
+                faces.append([i * (land_y_dimension + 1) + j, (i + 1) * (land_y_dimension + 1) + j, (i + 1) * (land_y_dimension + 1) + j + 1])
+                faces.append([i * (land_y_dimension + 1) + j, (i + 1) * (land_y_dimension + 1) + j + 1, i * (land_y_dimension + 1) + j + 1])
 
         mesh = bpy.data.meshes.new("top_mesh")
         mesh.from_pydata(vtx, [], faces)
@@ -145,7 +209,7 @@ def site_analysis(grid_size, full_site, land_extents_for_analysis, building_for_
         directory = os.path.dirname(blender_file_path)
         target_file = os.path.join(directory, 'terrain.glb')
         bpy.ops.export_scene.gltf(filepath=target_file, check_existing=True, export_format='GLB', use_selection=True)
-        print("terrain mesh exported successfully as 'terrain.glb' for the site: " + str(full_site))
+        print("terrain mesh exported successfully as 'terrain.glb' for the site: " + str(site_selected))
         # delete dummy object
         bpy.ops.object.delete()
 
@@ -157,7 +221,7 @@ def site_analysis(grid_size, full_site, land_extents_for_analysis, building_for_
 
     from mesh_intersection import intersection_trimesh
     print("starting intersection function")
-    vtx_intersection = intersection_trimesh(top_grid_vtx, blender_file_path)
+    vtx_intersection_site = intersection_trimesh(top_grid_vtx, blender_file_path)
 
     # continue with the rest of the code to visualize the intersection mesh
 
@@ -181,24 +245,24 @@ def site_analysis(grid_size, full_site, land_extents_for_analysis, building_for_
     # create the intersection mesh
 
     faces = []
-    for i in range(dx_rows):
-        for j in range(dy_cols):
-            faces.append([i * (dy_cols + 1) + j, (i + 1) * (dy_cols + 1) + j, (i + 1) * (dy_cols + 1) + j + 1])
-            faces.append([i * (dy_cols + 1) + j, (i + 1) * (dy_cols + 1) + j + 1, i * (dy_cols + 1) + j + 1])
+    for i in range(land_x_dimension):
+        for j in range(land_y_dimension):
+            faces.append([i * (land_y_dimension + 1) + j, (i + 1) * (land_y_dimension + 1) + j, (i + 1) * (land_y_dimension + 1) + j + 1])
+            faces.append([i * (land_y_dimension + 1) + j, (i + 1) * (land_y_dimension + 1) + j + 1, i * (land_y_dimension + 1) + j + 1])
     mesh = bpy.data.meshes.new("Top_intersection")
-    mesh.from_pydata(vtx_intersection, [], faces)
-    obj = bpy.data.objects.new("mesh_intersection", mesh)
+    mesh.from_pydata(vtx_intersection_site, [], faces)
+    obj = bpy.data.objects.new(site_selected + "_mesh_intersection", mesh)
 
     # link the intersection mesh object to the mesh intersection collection
     mesh_collection.objects.link(obj)
 
-    print('Visualization of intersection mesh completed as "mesh_intersection" for the site: ' + str(full_site))
+    print('Visualization of intersection mesh completed as "mesh_intersection" for the site: ' + str(site_selected))
 
-    site_information = d, dx_rows, dy_cols, bx_rows, by_cols, bz_height, z_level
+    site_information = d, land_x_dimension, land_y_dimension, bx_rows, by_cols, bz_height, z_level
     np.save(blender_file_path + '/site_information', site_information)  # file containing all variables
 
     print("score values successfully saved")
-    return d, dx_rows, dy_cols, bx_rows, by_cols, bz_height, z_level, top_grid_vtx, vtx_intersection
+    return d, land_x_dimension, land_y_dimension, bx_rows, by_cols, bz_height, z_level, top_grid_vtx, vtx_intersection_site
 
 
 def site_analysis2(grid_size, full_site, land_extents_for_analysis, building_for_analysis, level_for_implantation,
@@ -386,70 +450,6 @@ def site_analysis2(grid_size, full_site, land_extents_for_analysis, building_for
 
     print("score values successfully saved")
     return unit_grid_size, dx_rows, dy_cols, bx_rows, by_cols, bz_height, z_level, top_grid_vtx, vtx_intersection
-
-
-# top grid creation function
-def land_top_grid_analysis(grid_size, full_site, land_extents_for_analysis, blender_file_path, slp_app_file_path):
-    # determine the variables from the inputs
-
-    unit_grid_size = grid_size
-    site = bpy.data.objects.get(full_site)  # the full site chosen for analysis and intersection
-    land = bpy.data.objects.get(
-        land_extents_for_analysis)  # land is the rectangular plane representing the area on the site that allows for
-    # the building construction, it projects the extents of the grid its dimensions must be integers.
-    height_of_grid_above_site = 10  # height at which the grid was supposed to be inserted
-
-    print(f"Terrain selected: {full_site}")
-    print(f"Land selected: {land_extents_for_analysis}")
-    print(f"Grid size: {grid_size} m")
-
-    # measuring the land and creating top grid and saving the vertex on the top grid
-    if land is not None:
-
-        print("Found the mesh")
-        print(f"Land mesh is located at {land.location.x}, {land.location.y}, {land.location.z}")
-        print(f"With bounding box {land.dimensions.x}, {land.dimensions.y}, {land.dimensions.z}")
-
-        # Setting variables
-
-        land_x_dimension = int(land.dimensions.x)
-        land_y_dimension = int(land.dimensions.y)
-        height_of_grid_above_site_plus_site_z_bound = int(site.dimensions.z) + height_of_grid_above_site
-
-        vtx = [[i * land.dimensions.x / land_x_dimension + land.location.x - land.dimensions.x / 2.0,
-                j * land.dimensions.y / land_y_dimension + land.location.y - land.dimensions.y / 2.0,
-                land.dimensions.z + height_of_grid_above_site_plus_site_z_bound] for i in range(land_x_dimension + 1) for j in range(land_y_dimension + 1)]
-
-        faces = [[i * (land_y_dimension + 1) + j, (i + 1) * (land_y_dimension + 1) + j, (i + 1) * (land_y_dimension + 1) + j + 1] for i in
-                 range(land_x_dimension) for j in range(land_y_dimension)]
-        faces.extend(
-            [[i * (land_y_dimension + 1) + j, (i + 1) * (land_y_dimension + 1) + j + 1, i * (land_y_dimension + 1) + j + 1] for i in range(land_x_dimension)
-             for j in range(land_y_dimension)])
-
-        mesh = bpy.data.meshes.new("top_mesh")
-        mesh.from_pydata(vtx, [], faces)
-        obj = bpy.data.objects.new("top_grid_of_analysis", mesh)
-        bpy.context.scene.collection.objects.link(obj)
-        print("Top Grid created as: top_grid_of_analysis")
-
-        # saving the list of vertex of the "Top Grid" to be used on the mesh_intersection file with trimesh.
-        vtx_position = [x for l in vtx for x in l]
-        vtx_id = len(vtx)
-        top_grid_vtx = np.array_split(vtx_position, vtx_id)
-        np.save(blender_file_path + 'top_grid_vtx', top_grid_vtx)
-        print("ray origins for intersection exported as 'top_grid_vtx'")
-
-        # Delete "top_grid_of_analysis" since it won't be used anymore
-        obj = bpy.data.objects.get("top_grid_of_analysis")
-        if obj is not None:
-            # Remove the object from the scene
-            bpy.data.objects.remove(obj)
-        else:
-            print("Object with the name 'top_grid_of_analysis' not found")
-    else:
-        print("mesh not found")
-
-    return top_grid_vtx, land_x_dimension, land_y_dimension, height_of_grid_above_site_plus_site_z_bound
 
 
 def site_analysis3(grid_size, full_site, land_extents_for_analysis, building_for_analysis, level_for_implantation,
