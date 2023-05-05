@@ -156,7 +156,7 @@ def site_analysis(grid_size, full_site, land_extents_for_analysis, building_for_
     # trimesh to launch rays from the grid vertex and determines the intersection with the site.
 
     from mesh_intersection import intersection_trimesh
-    print("!!!!!!!!!!! function intersection working")
+    print("starting intersection function")
     vtx_intersection = intersection_trimesh(top_grid_vtx, blender_file_path)
 
     # continue with the rest of the code to visualize the intersection mesh

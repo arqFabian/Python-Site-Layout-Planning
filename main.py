@@ -78,6 +78,7 @@ from blender_mesh import site_analysis
 
 
 D, dx_rows, dy_cols, bx_rows, by_cols, bz_height, z_level, top_grid_vtx, vtx_intersection = site_analysis(D, SITE, LAND, BUILDING, LEVEL, blender_file_path, SLP_APP_PATH)
+#site_analysis(D, SITE, LAND, BUILDING, LEVEL, blender_file_path, SLP_APP_PATH)
 
 print("the site and building variables have been calculated")
 
