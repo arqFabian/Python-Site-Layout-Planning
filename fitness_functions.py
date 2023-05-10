@@ -295,8 +295,6 @@ def scores_coordinates_sorting_function(number_of_solutions, activated_values_li
                 tup_list[i] = item.tolist()
         scores_coordinates_sorted.append(tuple(tup_list))
 
-    # print(scores_coordinates_sorted[0])
-
     # preview of chosen candidates
     for i in range(int(number_of_solutions)):
         print(f"Candidate {i + 1}:")
@@ -311,12 +309,24 @@ def scores_coordinates_sorting_function(number_of_solutions, activated_values_li
         print("value f3: ", candidate[7])
         print("coordinates", candidate[8])
 
-    # print (list_of_vtx_coordinates)
-
+    # save
     scores_coordinates_sorted = np.array(scores_coordinates_sorted, dtype=object)
     np.savetxt(blender_file_path + '\scores_coordinates_sorted.txt', scores_coordinates_sorted, delimiter=',', fmt='%s')
 
     print("sorted score values successfully saved as scores_coordinates_sorted.txt ")
+
+    # isolate the available coordinates from scores_coordinates_sorted
+    coordinates_unity = [tup[8] for tup in scores_coordinates_sorted]
+    # save the list of coordinates as coordinates_unity.txt
+    np.savetxt(blender_file_path + '\coordinates_unity.txt', coordinates_unity, delimiter=',', fmt='%s')
+
+    # Remove the available_coordinates from scores_coordinates_sorted
+    scores_sorted_without_coordinates = [(tup[0], tup[1], tup[2], tup[3], tup[4], tup[5], tup[6], tup[7]) for tup in
+                                         scores_coordinates_sorted]
+    # Save the sorted scores without coordinates to a text file
+    np.savetxt(blender_file_path + '/sorted_scores_unity.txt', scores_sorted_without_coordinates, delimiter=',',
+               fmt='%s')
+
     return scores_coordinates_sorted
 
 

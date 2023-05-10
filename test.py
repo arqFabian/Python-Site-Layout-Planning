@@ -1,50 +1,34 @@
-# This script uses trimesh as the main tool for processing the intersections.
-# The lists are imported from blender and in here are reformatted as numpy arrays.
-# The meshes are in GLB format as per recommended by trimesh on their website.
-
-"""
-Fragment of code that identifies the intersection point between the site
-and rays with origin on a grid stationed above the bounds of the site.
-The scripts works outside the frame of blender.
 """
 
-import trimesh
+print(f"Candidate {i + 1}:")
+candidate = scores_coordinates_sorted[i]
+print("Position: ", candidate[0])
+print("Overall Score: ", candidate[1])
+print("function 1: ", candidate[2])
+print("function 2: ", candidate[3])
+print("function 3: ", candidate[4])
+print("value f1: ", candidate[5])
+print("value f2: ", candidate[6])
+print("value f3: ", candidate[7])
+print("coordinates", candidate[8])"""
+
 import numpy as np
-import rtree
+
+#blender_file_path = "/Users/arqfa/OneDrive/Desktop/Research"
+#scores_coordinates_sorted = np.loadtxt(blender_file_path + '/scores_coordinates_sorted.txt')
+#print(f"coordinates {str(scores_coordinates_sorted[0])}")
+
+import os
+
+blender_file_path = "/Users/arqfa/OneDrive/Desktop/Research"
+file_path = os.path.join(blender_file_path, 'scores_coordinates_sorted.txt')
+
+if os.path.isfile(file_path):
+    scores_coordinates_sorted = np.loadtxt(file_path, delimiter=',')
+    print(f"coordinates: {str(scores_coordinates_sorted[0][2])}")
+else:
+    print(f"File '{file_path}' does not exist.")
 
 
-if __name__ == '__main__':
 
-# mesh
-    #import mesh representing the site from blender
-    mesh = trimesh.load('/Users/arqfa/OneDrive/Desktop/Research/terrain.glb', force='mesh')
-    ##mesh = trimesh.load('/Users/arqfa/downloads/cube.glb', force='mesh')
-
-# create some rays and find the intersection "rays - site"
-    #load data from blender grid origin
-    data = np.load('/Users/arqfa/OneDrive/Desktop/Research/origin.npy')
-    ray_origins = np.array(data)
-    #print(ray_origins)
-    # ray_directions pointing down
-    ray_directions = np.array([[0, 0, -1]] * int(len(ray_origins)))
-
-    # run trimesh to find the intersection between the rays and site
-    locations, index_ray, index_tri = mesh.ray.intersects_location(
-        ray_origins=ray_origins,
-        ray_directions=ray_directions)
-
-    # sorting the intersections based on the index of the rays to follow the order of the grid
-
-    locations = np.array(locations)
-
-    index_ray = np.array(index_ray)
-    inds = index_ray.argsort()
-    sortedIntersections = locations[inds]
-    #print("this is the sorted list: " + str(sortedIntersections))
-    print("Number of intersections: " + str(len(sortedIntersections)))
-# add a condition that verifies if the number of intersections is similar to the number of rays if not report an error
-
-
-#saving the intersections as "intersection.npy" file
-    np.save('/Users/arqfa/OneDrive/Desktop/Research/intersection', sortedIntersections)
 

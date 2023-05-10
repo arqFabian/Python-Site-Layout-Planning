@@ -43,12 +43,14 @@ def radar_plot(sorted_values_input, number_of_plotted_solutions):
 
     return
 
-slp_plot = radar_plot(scores_coordinates_sorted, NUMBER_SOLUTIONS_TO_PLOT)
+
+radar_plot(scores_coordinates_sorted, NUMBER_SOLUTIONS_TO_PLOT)
 
 
 def radar_plot_single(sorted_values_input):
-    available_positions, overall_score, activated_f1, activated_f2, activated_f3, f1_values, f2_values, f3_values, \
-    available_coordinates = list(zip(*sorted_values_input))
+    available_positions, overall_score, activated_f1, activated_f2, activated_f3, \
+    f1_values, f2_values, f3_values, available_coordinates = list(zip(*sorted_values_input))
+
     activated_functions = list(zip(activated_f1, activated_f2, activated_f3))
     categories = ['f1 Earthwork values', 'f2 earthwork costs', 'f3 deforestation values']
     fig = go.Figure()
@@ -74,13 +76,12 @@ def radar_plot_single(sorted_values_input):
     return
 
 
-#radar_plot_single(scores_coordinates_sorted[0],1)
-#for i in range(int(NUMBER_SOLUTIONS_TO_PLOT)):
-    #scores = scores_coordinates_sorted[i]
-   # print (scores)
-    #n = 1
-    #radar_plot(scores)
-
+# radar_plot_single(scores_coordinates_sorted[0],1)
+# for i in range(int(NUMBER_SOLUTIONS_TO_PLOT)):
+# scores = scores_coordinates_sorted[i]
+# print (scores)
+# n = 1
+# radar_plot(scores)
 
 
 # column graph
@@ -93,11 +94,11 @@ def column_graph_plot(available_position_list, y_original_value, y_label, number
     # Plot the column graph for costs
     positions = [i + 1 for i in range(number_of_plotted_solutions)]
     y_values = y_original_value[:number_of_plotted_solutions]
-    #ax.bar(positions, y_values)
+    # ax.bar(positions, y_values)
 
     # Generate a list of colors for each bar
     num_bars = len(y_values)
-    #colors = plt.cm.Set2(np.arange(num_bars))
+    # colors = plt.cm.Set2(np.arange(num_bars))
     colors = plt.cm.Blues(np.linspace(1, 0.2, num_bars))
 
     ax.bar(positions, y_values, color=colors)
