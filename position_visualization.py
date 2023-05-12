@@ -74,7 +74,8 @@ def sphere_creation(sorted_values_input, number_to_plot):
         if sphere.name not in ranking_collection.objects:
             ranking_collection.objects.link(sphere)
 
-        # ranking_collection.objects.link(sphere)
+        # turn on the name visualization on the viewport
+        sphere.show_name = True
 
     print("spheres created")
 
