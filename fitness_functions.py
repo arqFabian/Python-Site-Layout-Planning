@@ -8,7 +8,8 @@ T0_INFLECTION_VALUE = 0.5  # inflection value "t0" applied during the activation
 WEIGHTS = [0.5, 0.3, 0.2]
 NUMBER_SOLUTIONS_TO_PLOT = 5
 
-blender_file_path = "/Users/arqfa/OneDrive/Desktop/Research"
+# blender_file_path = "/Users/arqfa/OneDrive/Desktop/Research"
+blender_file_path = "/Users/arqfa/OneDrive - Kyushu University/ResearchBigData/VR-research/BlenderFiles"
 
 site_information = np.load(blender_file_path + '/site_information.npy')
 print("site information loaded")
@@ -22,12 +23,15 @@ by_cols = int(site_information[4])
 bz_height = int(site_information[5])
 z_level = int(site_information[6])
 
+print(site_information)
+
 top_grid_vtx = np.load(blender_file_path + '/top_grid_vtx.npy')
 print("origin vertex loaded")
 
 site_volumes = np.load(blender_file_path + '/site_volumes.npy')
+print(f"For site volume the max value is {max(site_volumes)} and the min value is {min(site_volumes)}")
 
-print("there are " + str(len(site_volumes)) + " independent volumes on the grid of the site")
+#print("there are " + str(len(site_volumes)) + " independent volumes on the grid of the site")
 # print (volumes)
 # site_trees = [0, 1, 0.5, 0, 0.25] * 1000
 site_trees = np.load(blender_file_path + '/site_trees.npy')
@@ -82,13 +86,14 @@ def f1_earthwork_vol_function(available_position_list, volume_list):
 
         # Formula to sum the partials representing the sum of the values per row under the building projection
         vol_sum = abs(math.fsum(partials_f1[0:int(j_max)]))
-        ##vol_sum2 = math.fsum(partials_f1[0:int(j_max)])
 
         rounded_vol_sum = round(vol_sum, 3)
-        ##rounded_vol_sum2 = round(vol_sum2,3)
+
 
         # Creation of the lists with the values per position for the fitness function prior to the normalization
         f1.append(rounded_vol_sum)
+
+    print(f"the max value for f1 is {max(f1)} and the min value is {min(f1)}")
 
     return f1
 
@@ -123,7 +128,7 @@ def f2_earthwork_costs_function(available_position_list, volume_list):
 
         # Formula to sum the partials representing the sum of the values per row under the building projection
 
-        costs_sum = (math.fsum(partials_f2[0:int(j_max)])) * int(unit_price)
+        costs_sum = ((math.fsum(partials_f2[0:int(j_max)])) + (bx_rows * by_cols * 2.5)) * int(unit_price)
 
         # Round the results to two decimals since they represent JPY currency.
         rounded_costs_sum = round(costs_sum, 2)
@@ -131,9 +136,8 @@ def f2_earthwork_costs_function(available_position_list, volume_list):
         # Creation of the lists with the values per position for the fitness function prior to the normalization
         f2.append(rounded_costs_sum)
 
-    ## print("These are the results for the " + (str(len(available_positions))) + " possible positions")
-    ## print("For f2-earthwork costs: ")
-    ## print(f2_earthwork_costs)
+    print("f2_earthwork_costs calculated")
+    print(f"the max value for f2 is {max(f2)} and the min value is {min(f2)}")
 
     return f2
 
@@ -181,14 +185,14 @@ f3_deforestation_value = f3_deforestation_function(available_positions, site_tre
 # Normalization of the results. This function was incorporated as part of the activation function
 
 def normalization_of_functions(input_list):
-    n_list = input_list  # List to normalize
-    list_max = max(n_list)
-    print("max original " + str(max(n_list)))
-    print("min original " + str(min(n_list)))
-    list_min = 0  # optimizing for zero
-    # list_min = min(n_list)  # optimizing for the lowest value
+
+    list_max = max(input_list)
+    # list_min = 0  # optimizing for zero
+    list_min = min(input_list)  # optimizing for the lowest value
+    print(f"max original for {str(max(input_list))}")
+    print(f"min original {str(min(input_list))}")
     normalized_result = []
-    for value in n_list:
+    for value in input_list:
         normalization = (list_max - value) / (list_max - list_min)
         rounded_normalization = round(normalization, 3)
         normalized_result.append(rounded_normalization)
@@ -215,7 +219,8 @@ def activation_function(input_list, k_penalization_factor, t0_inflection_point):
     # Once again normalization of activated list because of numerical shift due to k and t0 values.
     min_list = min(activated_list)
     max_list = 1  # This value is the ideal scenario
-    # max_list = max(activated_list) #the highest value becomes the ideal scenario
+    #max_list = max(activated_list) # the highest value becomes the ideal scenario
+
     normalized_activated_list = [(value - min_list) / (max_list - min_list) for value in activated_list]
     normalized_activated_list = [round(value, 3) for value in normalized_activated_list]
     print("max activated " + str(max(normalized_activated_list)))
@@ -257,6 +262,7 @@ def temp_overall_score_function(activated_values_list, weights_input):
 overall_score = temp_overall_score_function(activated_values, WEIGHTS)
 
 # function to add
+
 
 def scores_coordinates_sorting_function(number_of_solutions, activated_values_list, original_values_list,
                                         available_positions_list, vtx_coordinates_list, overall_score_list,
@@ -311,14 +317,14 @@ def scores_coordinates_sorting_function(number_of_solutions, activated_values_li
 
     # save
     scores_coordinates_sorted = np.array(scores_coordinates_sorted, dtype=object)
-    np.savetxt(blender_file_path + '\scores_coordinates_sorted.txt', scores_coordinates_sorted, delimiter=',', fmt='%s')
+    np.savetxt(blender_file_path + '/scores_coordinates_sorted.txt', scores_coordinates_sorted, delimiter=',', fmt='%s')
 
     print("sorted score values successfully saved as scores_coordinates_sorted.txt ")
 
     # isolate the available coordinates from scores_coordinates_sorted
     coordinates_unity = [tup[8] for tup in scores_coordinates_sorted]
     # save the list of coordinates as coordinates_unity.txt
-    np.savetxt(blender_file_path + '\coordinates_unity.txt', coordinates_unity, delimiter=',', fmt='%s')
+    np.savetxt(blender_file_path + '/coordinates_unity.txt', coordinates_unity, delimiter=',', fmt='%s')
 
     # Remove the available_coordinates from scores_coordinates_sorted
     scores_sorted_without_coordinates = [(tup[0], tup[1], tup[2], tup[3], tup[4], tup[5], tup[6], tup[7]) for tup in
@@ -334,7 +340,7 @@ scores_coordinates_sorted = scores_coordinates_sorting_function(NUMBER_SOLUTIONS
                                                                 original_values, available_positions, top_grid_vtx,
                                                                 overall_score, z_level)
 
-np.save(blender_file_path + '/scores_coordinates_sorted.npy',
-        scores_coordinates_sorted)  # This file can be deleted once the data has been joined
+#np.save(blender_file_path + '/scores_coordinates_sorted.npy',
+#        scores_coordinates_sorted)  # This file can be deleted once the data has been joined
 
 

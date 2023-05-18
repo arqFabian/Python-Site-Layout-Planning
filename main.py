@@ -26,14 +26,14 @@ import plotly.graph_objects as go
 
 #constants
 D_GRID_UNIT_SIZE = 1
-sites = ["T0-West2","test-site-1", "test-site-2", "test-site-3", "T4-Lake"] # list of the sites, in this form since we are manipulating several terrains from a single file
-SITE = str(sites[1]) # the number represents the chosen name from the list "sites"
+sites = ["L1_experiment","test-site-1", "T0-West2"] # list of the sites, in this form since we are manipulating several terrains from a single file
+SITE = str(sites[0]) # the number represents the chosen name from the list "sites"
 LAND = "AreaSelection" # name of the chosen land mesh reprensenting the area inside the site to be used.
                         # The LAND should be decided based on legislation and area of interest but for now it must be a rectangular shape
-BUILDING = "building10x10" # name of the building mesh for wich we are calculating
+BUILDING = "building16x16" # name of the building mesh for wich we are calculating
 LEVEL = "level_location" #name of the plane_mesh located at the desired level of implantation of building
 
-K_FACTOR = 10 # Penalization value "k" applied during the activation formula
+K_FACTOR = 5 # Penalization value "k" applied during the activation formula
 T0_INFLECTION_VALUE = 0.5 # inflection value "t0" applied during the activation formula. It must be from 0 to 1
 
 WEIGHTS = [0.5, 0.3, 0.2]
@@ -124,6 +124,8 @@ activated_values = list(zip(activated_f1, activated_f2, activated_f3))
 print(f"activated fitness functions calculated successfully for {str(len(activated_f1))} values")
 
 
+
+
 # optimization and sorting of solutions
 
 overall_score = temp_overall_score_function(activated_values, WEIGHTS)
@@ -135,7 +137,7 @@ scores_coordinates_sorted = scores_coordinates_sorting_function(NUMBER_SOLUTIONS
 
 if scores_coordinates_sorted is not None:
 
-    np.save(blender_file_path + '/scores_coordinates_sorted.txt',
+    np.save(blender_file_path + '/scores_coordinates_sorted',
             scores_coordinates_sorted)  # This file can be deleted once the data has been joined
     print("score coordinates values successfully saved as scores_coordinates_sorted.npy")
 

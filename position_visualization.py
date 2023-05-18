@@ -11,7 +11,9 @@ cls()  # this function call will clear the console
 
 # load files
 
-blender_file_path = "/Users/arqfa/OneDrive/Desktop/Research"
+#blender_file_path = "/Users/arqfa/OneDrive/Desktop/Research"
+blender_file_path = bpy.path.abspath("//")  # This will update when using on different blender files.
+print (blender_file_path)
 
 scores_coordinates_sorted = np.load(blender_file_path + '/scores_coordinates_sorted.npy', allow_pickle=True)
 print("sorted score values successfully loaded")

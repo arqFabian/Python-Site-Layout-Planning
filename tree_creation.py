@@ -9,10 +9,9 @@ from os import system
 
 # Site and object names
 
-sites = ["T0-West2", "test-site-1", "test-site-2", "test-site-3",
-         "T4-Lake"]  # list of the sites, in this form since we are manipulating several terrains from a single file
+sites = ["L1_experiment","test-site-1", "T0-West2"]  # list of the sites, in this form since we are manipulating several terrains from a single file
 
-SITE = str(sites[1])  # the number represents the chosen name from the list "sites" name of the terrain we want to
+SITE = str(sites[0])  # the number represents the chosen name from the list "sites" name of the terrain we want to
 # create trees
 
 LAND = "AreaSelection"  # name of the chosen land mesh reprensenting the area inside the site to be used.

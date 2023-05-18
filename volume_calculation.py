@@ -1,7 +1,8 @@
 import numpy as np
 
 
-blender_file_path = "/Users/arqfa/OneDrive/Desktop/Research"
+#blender_file_path = "/Users/arqfa/OneDrive/Desktop/Research"
+blender_file_path = "/Users/arqfa/OneDrive - Kyushu University/ResearchBigData/VR-research/BlenderFiles"
 vtx_origin = np.load(blender_file_path + '/top_grid_vtx.npy')
 print("origin vertex loaded")
 # load intersection vertex
@@ -25,7 +26,7 @@ bz_height = int(site_information[5])
 z_level = int(site_information[6])
 
 ###
-# This funciton extract the z coordinate from the vtx intersections.
+# This function extract the z coordinate from the vtx intersections.
 # the z coordinate is the value use for the volume calculations
 ###
 
@@ -42,8 +43,6 @@ def z_coordinate_extraction(input_list_vertex):
 z_coord_intersection = z_coordinate_extraction(vtx_intersection)
 z_coord_land = z_coordinate_extraction(vtx_origin)
 
-print(str(len(z_coord_intersection)) + str(z_coord_intersection[0:5]))
-print(str(len(z_coord_land)) + str(z_coord_land[0:5]))
 
 
 #############
@@ -88,6 +87,8 @@ site_volumes = volume_formula(dx_rows, dy_cols, D, z_coord_intersection, z_level
 #print("!!!!!!!!")
 #print("the volumes per segment of grid are: " + str(site_volumes))
 
-np.save('/Users/arqfa/OneDrive/Desktop/Research/site_volumes',
+np.save(blender_file_path + '/site_volumes',
         site_volumes)  # This file can be deleted once the data has been joined
 #print("Volumes exported successfully")
+
+
