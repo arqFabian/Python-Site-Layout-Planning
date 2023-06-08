@@ -6,11 +6,12 @@ from mpl_toolkits.mplot3d import Axes3D
 
 NUMBER_SOLUTIONS_TO_PLOT = 5
 
-blender_file_path = "/Users/arqfa/OneDrive/Desktop/Research"
+#blender_file_path = "/Users/arqfa/OneDrive/Desktop/Research"
+blender_file_path = "/Users/arqfa/OneDrive - Kyushu University/ResearchBigData/VR-research/BlenderFiles"
 
 scores_coordinates_sorted = np.load(blender_file_path + '/scores_coordinates_sorted.npy', allow_pickle=True)
 print("sorted score values successfully loaded")
-
+print(scores_coordinates_sorted[68])
 
 # Radar graph
 

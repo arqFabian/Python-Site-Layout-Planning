@@ -75,7 +75,7 @@ def f3(x):
 bounds = np.array([[-5.0, 5.0]])
 
 # Define the weights for the objective functions
-weights = [1.0, 3.0, 1.0]
+weights = [0.5, 0.3, 0.2]
 
 results = pareto_optimization([f1, f2, f3], bounds, weights)
 

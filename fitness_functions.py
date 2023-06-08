@@ -172,9 +172,9 @@ def f3_deforestation_function(available_position_list, tree_list):
         # Creation of the lists with the values per position for the fitness function prior to the normalization
         f3.append(tree_sum)
 
-    # print("These are the results for the " + (str(len(available_positions))) + " possible positions")
-    # print("For f3-deforestation value: ")
-    # print(f3_deforestation_value)
+
+    print("f3_deforestation_value calculated")
+    print(f"the max value for f2 is {max(f3)} and the min value is {min(f3)}")
 
     return f3
 
