@@ -9,7 +9,7 @@ from os import system
 
 # Site and object names
 
-sites = ["L1_experiment","test-site-1", "T0-West2"]  # list of the sites, in this form since we are manipulating several terrains from a single file
+sites = ["L1_experiment","L2_experiment", "L3_experiment", "test-site-1", "T0-West2"]  # list of the sites, in this form since we are manipulating several terrains from a single file
 
 SITE = str(sites[0])  # the number represents the chosen name from the list "sites" name of the terrain we want to
 # create trees
