@@ -2,7 +2,7 @@ import math
 import numpy as np
 import random
 
-K_FACTOR = 10  # Penalization value "k" applied during the activation formula
+K_FACTOR = 5  # Penalization value "k" applied during the activation formula
 T0_INFLECTION_VALUE = 0.5  # inflection value "t0" applied during the activation formula. It must be from 0 to 1
 
 WEIGHTS = [0.5, 0.3, 0.2]

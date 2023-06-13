@@ -26,7 +26,7 @@ import plotly.graph_objects as go
 
 #constants
 D_GRID_UNIT_SIZE = 1
-sites = ["L1_experiment","test-site-1", "T0-West2"] # list of the sites, in this form since we are manipulating several terrains from a single file
+sites = ["L1_experiment", "L2_experiment", "L3_experiment","test-site-1", "T0-West2"] # list of the sites, in this form since we are manipulating several terrains from a single file
 SITE = str(sites[0]) # the number represents the chosen name from the list "sites"
 LAND = "AreaSelection" # name of the chosen land mesh reprensenting the area inside the site to be used.
                         # The LAND should be decided based on legislation and area of interest but for now it must be a rectangular shape
@@ -82,6 +82,7 @@ z_coord_intersection = z_coordinate_extraction(vtx_intersection)
 z_coord_land = z_coordinate_extraction(top_grid_vtx)
 
 site_volumes = volume_formula(land_x_dimension, land_y_dimension, D_GRID_UNIT_SIZE, z_coord_intersection, z_level)
+np.save(blender_file_path + '/site_volumes', site_volumes)  # This file can be deleted once the data has been joined
 print("The volumes per segment of grid have been calculated. There are " + str(len(site_volumes)))
 
 # Tree detection module

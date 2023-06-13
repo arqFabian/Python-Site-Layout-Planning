@@ -9,7 +9,7 @@ from os import system
 
 # Site and object names
 
-sites = ["L1_experiment","L2_experiment", "L3_experiment", "test-site-1", "T0-West2"]  # list of the sites, in this form since we are manipulating several terrains from a single file
+sites = ["L1_experiment", "L2_experiment", "L3_experiment", "test-site-1", "T0-West2"]  # list of the sites, in this form since we are manipulating several terrains from a single file
 
 SITE = str(sites[0])  # the number represents the chosen name from the list "sites" name of the terrain we want to
 # create trees
@@ -39,9 +39,9 @@ cls = lambda: system('cls')
 cls()  # this function call will clear the console
 
 # load vtx intersection list
-vtx_intersection = np.load(blender_file_path + 'vtx_intersection.npy')  # for testing the tree detection function
+#vtx_intersection = np.load(blender_file_path + 'vtx_intersection.npy')  # for testing the tree detection function
 # and has no influence on the rest of the script
-print('vtx_intersection loaded')
+#print('vtx_intersection loaded')
 
 # Dummy list for trees can be deleted once the tree detection module  has been calculated
 
@@ -53,6 +53,8 @@ print('vtx_intersection loaded')
 
 # Start of tree creation
 print('Tree creation component')
+
+
 
 # creation of top mesh for tree detection
 from blender_mesh import land_top_grid_analysis
@@ -180,6 +182,7 @@ def make_instances_real(terrain_object_input):
 make_instances_real(SITE)
 
 
+
 # function to detect if there is a tree on the region
 
 def tree_detection_down(top_grid_vtx_input, site_input, top_grid_height_input):
@@ -192,6 +195,13 @@ def tree_detection_down(top_grid_vtx_input, site_input, top_grid_height_input):
     if coordinates and site_input:
         # Get the object by name
         #site_obj = bpy.data.objects[site]
+
+        # Hide LAND
+        land_object = bpy.data.objects.get(LAND)
+
+        if land_object is not None:
+            # Hide the object in the viewport
+            land_object.hide_viewport = True
 
         # Select and hide all objects that start with "terrain_"
         for terrain_obj in bpy.data.objects:
@@ -224,6 +234,8 @@ def tree_detection_down(top_grid_vtx_input, site_input, top_grid_height_input):
         for terrain_obj in bpy.data.objects:
             if terrain_obj.name.startswith(site_input):
                 terrain_obj.hide_viewport = False
+
+        land_object.hide_viewport = False
 
     else:
         print("")
