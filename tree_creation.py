@@ -2,7 +2,6 @@
 import bpy, bmesh
 import numpy as np
 import sys
-import random
 from os import system
 
 # Constants and parameters

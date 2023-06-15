@@ -6,8 +6,8 @@ from matplotlib.patheffects import withStroke
 
 
 blender_file_path = "/Users/arqfa/OneDrive - Kyushu University/ResearchBigData/VR-research/BlenderFiles"
-
-site_information = np.load(blender_file_path + '/site_information.npy')
+site_data_path = "/Site1"
+site_information = np.load(blender_file_path + site_data_path + '/site_information.npy')
 print("site information loaded")
 # D, dx_rows, dy_cols, bx_rows, by_cols, bz_height, z_level = site_information
 
@@ -20,9 +20,9 @@ bz_height = int(site_information[5])
 z_level = int(site_information[6])
 
 # Data for Site 1 : L1 - experiment
-participant = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-blender_answer = [(61, -16, 0), (-21, 11, 0), (62, 28, 0), (9, 21, 0), (10, 21, 0), (58, -2, 0), (-28, -7, 0), (-24, -14, 0), (9,24,0), (28, -27, 0)]
-vr_answer = [(6, -45, 0), (31, 20, 0), (36, -15, 0), (36, -13, 0), (34, -36, 0), (6, -44, 0), (31, 20, 0), (31, 20, 0), (9,1,0), (35,-35,0)]
+participant = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+blender_answer = [(61, -16, 0), (-21, 11, 0), (62, 28, 0), (9, 21, 0), (10, 21, 0), (58, -2, 0), (-28, -7, 0), (-24, -14, 0), (9,24,0), (28, -27, 0), (-8,6,0) ]
+vr_answer = [(6, -45, 0), (31, 20, 0), (36, -15, 0), (36, -13, 0), (34, -36, 0), (6, -44, 0), (31, 20, 0), (31, 20, 0), (9,1,0), (35,-35,0), (7,-44,0)]
 
 recommended_answer = (35, -35, 0)
 
