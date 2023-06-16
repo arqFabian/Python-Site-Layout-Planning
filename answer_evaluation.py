@@ -21,8 +21,8 @@ z_level = int(site_information[6])
 
 # Data for Site 1 : L1 - experiment
 participant = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
-blender_answer = [(61, -16, 0), (-21, 11, 0), (62, 28, 0), (9, 21, 0), (10, 21, 0), (58, -2, 0), (-28, -7, 0), (-24, -14, 0), (9,24,0), (28, -27, 0), (-8,6,0) ]
-vr_answer = [(6, -45, 0), (31, 20, 0), (36, -15, 0), (36, -13, 0), (34, -36, 0), (6, -44, 0), (31, 20, 0), (31, 20, 0), (9,1,0), (35,-35,0), (7,-44,0)]
+blender_answer = [(61, -16, 0), (-21, 11, 0), (62, 28, 0), (9, 21, 0), (10, 21, 0), (58, -2, 0), (-28, -7, 0), (-24, -14, 0), (9,24,0), (28, -27, 0), (-8,6,0), (-18,-14,0), (-16, 13, 0)]
+vr_answer = [(6, -45, 0), (31, 20, 0), (36, -15, 0), (36, -13, 0), (34, -36, 0), (6, -44, 0), (31, 20, 0), (31, 20, 0), (9,1,0), (35,-35,0), (7,-44,0), (1,-11,0), (35,-37,0)]
 
 recommended_answer = (35, -35, 0)
 
@@ -44,26 +44,28 @@ def accuracy_function(answer_input, recommended_answer_input):
         # calculate the distance using the distance formula
         distance = round((math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2 + (z2 - z1) ** 2)), 3)
         distance_blender.append(distance)
-    print(distance_blender)
+    print(f"The distances in blender from the locations chosen by the participants to the best location identified by the system are: "
+        f"{distance_blender}")
     for i in unity:
         x1, y1, z1 = i
 
         # calculate the distance using the distance formula
         distance = round((math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2 + (z2 - z1) ** 2)), 3)
         distance_unity.append(distance)
-    print(distance_unity)
-
+    print(f"The distances in Unity from the locations chosen by the participants to the best location identified by the system are: "
+          f"{distance_unity}")
     accuracy_improvement = []
     for i in range(len(distance_blender)):
         improvement = round((float(distance_blender[i]) - float(distance_unity[i])) * 100 / float(distance_blender[i]),
                             3)
         accuracy_improvement.append(improvement)
+    print("The accuracy improvement as a percentage for each participant is:"
+          f" {accuracy_improvement}")
 
     return accuracy_improvement
 
 
 accuracy_percentage_improvement = accuracy_function(answers, recommended_answer)
-print(accuracy_percentage_improvement)
 
 
 # function to plot the accuracy graph
